@@ -1,0 +1,96 @@
+## Double-quoted non-SQL string.
+## failures 0
+## cut
+
+my $string = "Hello $world";
+
+## name Single-quoted SQL string with an escaped variable.
+## failures 0
+## cut
+
+my $sql = 'SELECT * FROM table WHERE $field = 1';
+
+## name Single-quoted SQL string.
+## failures 0
+## cut
+
+my $sql = 'SELECT * FROM table';
+
+## name Double-quoted SQL string without interpolated variables.
+## failures 0
+## cut
+
+my $sql = "SELECT * FROM table";
+
+## name Double-quoted SQL string with an interpolated scalar.
+## failures 1
+## cut
+
+my $sql = "SELECT * FROM $table";
+
+## name Double-quoted SQL string with an interpolated array element.
+## failures 1
+## cut
+
+my $sql = "SELECT * FROM $table[0] WHERE field = 'value'";
+
+## name Double-quoted SQL string with an interpolated hash element.
+## failures 1
+## cut
+
+my $sql = "SELECT * FROM $table{'name'}";
+
+## name qq-quoted SQL string with an interpolated scalar.
+## failures 1
+## cut
+
+my $sql = qq|
+	SELECT *
+	FROM $table
+	WHERE $field = 'value'
+|;
+
+## name Double-quoted SQL string with multiple variables.
+## failures 1
+## cut
+
+my $sql = "
+	SELECT $field_name
+	FROM $table
+";
+
+## name Double-quoted SQL string with multiple variables (whitelisted).
+## failures 0
+## cut
+
+my $sql = "
+	SELECT $field_name
+	FROM $table
+"; ## SQL safe ($field_name $table)
+
+## name Double-quoted SQL string with multiple variables (partially whitelisted).
+## failures 1
+## cut
+
+my $sql = "
+	SELECT $field_name
+	FROM $table
+"; ## SQL safe ($table)
+
+## name Double-quoted SQL string with a nested data structure.
+## failures 1
+## cut
+
+my $sql = "
+	SELECT $tables->{'table'}->{'fields'}->[0]
+	FROM table
+";
+
+## name Double-quoted SQL string with a nested data structure (whitelisted).
+## failures 0
+## cut
+
+my $sql = "
+	SELECT $tables->{'table'}->{'fields'}->[0]
+	FROM table
+"; ## SQL safe ($tables->{'table'}->{'fields'}->[0])
