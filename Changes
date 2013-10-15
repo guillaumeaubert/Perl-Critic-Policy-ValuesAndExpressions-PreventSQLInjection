@@ -1,1 +1,4 @@
 Revision history for Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
+
+v1.0.0  2013-10-14
+        Public release.
