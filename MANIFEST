@@ -1,7 +1,12 @@
+Build.PL
 Changes
 LICENSE
 MANIFEST
 MANIFEST.SKIP
+META.json
+META.yml
+Makefile.PL
+Makefile.PL
 README.md
 ignore.txt
 lib/Perl/Critic/Policy/ValuesAndExpressions/PreventSQLInjection.pm
