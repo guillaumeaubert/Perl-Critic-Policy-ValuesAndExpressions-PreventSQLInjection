@@ -77,6 +77,35 @@ That said, you should always convert your code to use placeholders instead
 where possible.
 
 
+=head1 LIMITATIONS
+
+There are B<many> sources of SQL injection flaws, and this module comes with no guarantee whatsoever. It focuses on the most obvious flaws, but you should still learn more about SQL injection techniques to manually detect more advanced issues.
+
+Possible future improvements for this module:
+
+=over 4
+
+=item * Detect concatenation
+
+Currently, this module only analyzes whole strings, and ignores concatenated strings or variables. For example, this would incorrectly not trigger a violation:
+
+	my $sql = 'SELECT * FROM ' . $table;
+
+=item * Detect use of sprintf()
+
+This should probably be considered a violation:
+
+	my $sql = sprintf(
+		'SELECT * FROM %s',
+		$table
+	);
+
+=item * Parse heredoc
+
+This module does not analyze heredoc, but should since it interpolates variables by default.
+
+=back
+
 =cut
 
 Readonly::Scalar my $DESCRIPTION => 'SQL injection risk.';
