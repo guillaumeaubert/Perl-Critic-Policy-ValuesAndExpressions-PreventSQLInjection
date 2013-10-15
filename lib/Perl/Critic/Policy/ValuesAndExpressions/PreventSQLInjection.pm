@@ -104,6 +104,20 @@ sub default_themes
 }
 
 
+=head2 applies_to()
+
+Return the class of elements this policy applies to.
+
+	my $class = $policy->applies_to();
+
+=cut
+
+sub applies_to
+{
+	return 'PPI::Token::Quote';
+}
+
+
 =head1 BUGS
 
 Please report any bugs or feature requests through the web interface at
