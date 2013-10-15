@@ -1,0 +1,17 @@
+Changes
+LICENSE
+MANIFEST
+MANIFEST.SKIP
+README.md
+ignore.txt
+lib/Perl/Critic/Policy/ValuesAndExpressions/PreventSQLInjection.pm
+t/00-load.t
+xt/changes.t
+xt/kwalitee.t
+xt/manifest.t
+xt/module_versions.t
+xt/mojibake.t
+xt/perlcritic.t
+xt/pod-coverage.t
+xt/pod.t
+xt/unix_eol.t
