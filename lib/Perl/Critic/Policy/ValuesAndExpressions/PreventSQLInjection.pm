@@ -118,6 +118,40 @@ sub applies_to
 }
 
 
+=head2 get_safe_variables()
+
+Return a hashref with safe variable names as the keys.
+
+	my $safe_variables = get_safe_variables(
+		$self,
+		$line_number,
+	);
+
+=cut
+
+sub get_safe_variables
+{
+	my ( $self, $line_number ) = @_;
+
+	# Validate input and state.
+	croak 'Parsed comments not found'
+		if !defined( $self->{'_sqlsafe'} );
+	croak 'A line number is mandatory'
+		if !defined( $line_number ) || ( $line_number !~ /\A\d+\Z/ );
+
+	# If there's nothing in the cache for that line, return immediately.
+	return {}
+		if !exists( $self->{'_sqlsafe'}->{ $line_number } );
+
+	# Return a hash of safe variable names.
+	return {
+		map
+			{ $_ => 1 }
+			@{ $self->{'_sqlsafe'}->{ $line_number } }
+	};
+}
+
+
 =head2 parse_comments()
 
 Parse the comments for the current document and identify variables marked as
