@@ -118,6 +118,62 @@ sub applies_to
 }
 
 
+=head2 parse_comments()
+
+Parse the comments for the current document and identify variables marked as
+SQL safe.
+
+	parse_comments(
+		$self,
+		$ppi_document,
+	);
+
+=cut
+
+sub parse_comments
+{
+	my ( $self, $doc ) = @_;
+
+	# Only parse if we haven't done so already.
+	return
+		if defined( $self->{'_sqlsafe'} );
+
+	# Regex to detect comments like ## SQL safe ($var1, $var2)
+	my $comments_regex = qr/
+		\A
+		(?: [#]! .*? )?
+		\s*
+		# Find the ## annotation starter.
+		[#][#]
+		\s*
+		# "SQL safe" is our keyword.
+		SQL \s+ safe
+		\s*
+		# List of safe variables between parenthesis, space separated.
+		\((.*?)\)
+	/ixms;
+
+	# Parse all the comments for this document.
+	$self->{'_sqlsafe'} = {};
+	my $comments = $doc->find('PPI::Token::Comment') || [];
+	foreach my $comment ( @$comments )
+	{
+		# Determine if the line is a "SQL safe" comment.
+		my ( $safe_variables ) = $comment =~ $comments_regex;
+		next if !defined( $safe_variables );
+
+		# Store list of safe variables for that line.
+		push(
+			@{ $self->{'_sqlsafe'}->{ $comment->line_number() } },
+			split( /\s+/, $safe_variables )
+		);
+	}
+
+	#print Dumper( $self->{'_sqlsafe'} ), "\n";
+	return;
+}
+
+
 =head1 BUGS
 
 Please report any bugs or feature requests through the web interface at
