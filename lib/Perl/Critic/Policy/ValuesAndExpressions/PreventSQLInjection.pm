@@ -76,6 +76,20 @@ sub supported_parameters
 }
 
 
+=head2 default_severity()
+
+Return the default severify for this policy.
+
+	my $default_severity = $policy->default_severity();
+
+=cut
+
+sub default_severity
+{
+	return $Perl::Critic::Utils::SEVERITY_HIGHEST;
+}
+
+
 =head1 BUGS
 
 Please report any bugs or feature requests through the web interface at
