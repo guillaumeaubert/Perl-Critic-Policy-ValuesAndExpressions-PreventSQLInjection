@@ -6,6 +6,9 @@ severity = harsh
 # additional PerlCritic policies.
 theme = core
 
+# What's wrong with tabs? They're more friendly.
+[-CodeLayout::ProhibitHardTabs]
+
 # This module unfortunately requires fairly complex regexes.
 [-RegularExpressions::ProhibitComplexRegexes]
 
