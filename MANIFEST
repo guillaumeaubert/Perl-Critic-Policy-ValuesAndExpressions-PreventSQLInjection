@@ -1,3 +1,5 @@
+.perlcriticrc
+.travis.yml
 Build.PL
 Changes
 LICENSE
