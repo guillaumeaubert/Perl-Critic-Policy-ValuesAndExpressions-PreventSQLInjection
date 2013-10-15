@@ -90,6 +90,20 @@ sub default_severity
 }
 
 
+=head2 default_themes()
+
+Return the default themes this policy is included in.
+
+	my $default_themes = $policy->default_themes();
+
+=cut
+
+sub default_themes
+{
+	return qw( security );
+}
+
+
 =head1 BUGS
 
 Please report any bugs or feature requests through the web interface at
