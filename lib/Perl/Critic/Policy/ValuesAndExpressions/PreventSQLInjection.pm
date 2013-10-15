@@ -59,6 +59,37 @@ There is no configuration option available for this policy.
 Readonly::Scalar my $DESCRIPTION => 'SQL injection risk.';
 Readonly::Scalar my $EXPLANATION => 'Variables in interpolated SQL string are susceptible to SQL injection: %s';
 
+Readonly::Scalar my $VARIABLES_REGEX => qr/
+	# Ignore escaped sigils, since those wouldn't get interpreted as variables to interpolate.
+	(?<!\\)
+	# Allow literal, non-escapy backslashes.
+	(?:\\\\)*
+	(
+		# The variable needs to start with a sigil.
+		[\$\@]
+		# Account for the dereferencing, such as "$$" or "@$".
+		\$?
+		# Variable name.
+		(?:
+			# Note: include '::' to support package variables here.
+			\{(?:\w+|::)\} # Explicit {variable} name.
+			|
+			(?:\w|::)+	 # Variable name.
+		)
+		# Catch nested data structures.
+		(?:
+			# Allow for a dereferencing ->.
+			(?:->)?
+			# Can be followed by either a hash or an array.
+			(?:
+				\{['"]?\w+['"]?\} # Hash element.
+				|
+				\[['"]?\w+['"]?\] # Array element.
+			)
+		)*
+	)
+/x;
+
 
 =head1 FUNCTIONS
 
