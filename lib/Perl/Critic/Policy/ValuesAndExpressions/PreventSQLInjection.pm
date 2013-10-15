@@ -149,6 +149,81 @@ sub applies_to
 }
 
 
+=head2 violates()
+
+Check an element for violations against this policy.
+
+	my $policy->violates(
+		$element,
+		$document,
+	);
+
+=cut
+
+sub violates
+{
+	my ( $self, $element, $doc ) = @_;
+
+	parse_comments( $self, $doc );
+
+	my $sql_injections =
+	try
+	{
+		my $content = $element->content();
+		return if $content !~ /\b (?: SELECT | INSERT | UPDATE | DELETE ) \b/ix;
+
+		# Comments will appear at the end of the element, so we need to
+		# determine the ending line number instead of the beginning line
+		# number.
+		my $extra_height_span =()= $content =~ /\n/g;
+		my $safe_variables = get_safe_variables(
+			$self,
+			$element->line_number() + $extra_height_span
+		);
+		my $unsafe_variables = [
+			grep { !$safe_variables->{ $_ } }
+			@{ extract_variables( $content ) }
+		];
+
+		if ( $element->isa('PPI::Token::Quote::Double') )
+		{
+			return $unsafe_variables
+				if scalar( @$unsafe_variables ) != 0;
+		}
+		elsif ( $element->isa('PPI::Token::Quote::Interpolate') )
+		{
+			my ( $lead ) = $content =~ /\A(qq?)([^q])/s;
+			croak "Unknown format for >$content<"
+				if !defined( $lead );
+
+			# Skip single quoted strings.
+			return if $lead eq 'q';
+
+			return $unsafe_variables
+				if scalar( @$unsafe_variables ) != 0;
+		}
+
+		return;
+	}
+	catch
+	{
+		print STDERR "Error: $_\n";
+		return;
+	};
+
+	return defined( $sql_injections ) && scalar( @$sql_injections ) != 0
+		? $self->violation(
+			$DESCRIPTION,
+			sprintf(
+				$EXPLANATION,
+				join( ', ', @$sql_injections ),
+			),
+			$element,
+		)
+		: ();
+}
+
+
 =head2 extract_variables()
 
 Extract variable names from a string.
