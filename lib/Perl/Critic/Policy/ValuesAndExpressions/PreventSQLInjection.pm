@@ -54,6 +54,29 @@ But would leave alone:
 There is no configuration option available for this policy.
 
 
+=head1 MARKING VARIABLES AS SAFE
+
+You can disable this policy on a particular string with the usual PerlCritic
+syntax:
+
+	my $sql = "SELECT * FROM table WHERE field = $value"; ## no critic (PreventSQLInjection)
+
+This is however not recommended, even if you know that $value is safe because
+it was previously quoted with something such as:
+
+	my $value = $dbh->quote( $user_value );
+
+The risk there is that someone will later modify your code and introduce unsafe
+variables by accident, which will then not get reported. To prevent this, this
+module has a special C<## SQL safe ($var1, $var2, ...)> syntax which allows
+whitelisting specific variables:
+
+	my $sql = "SELECT * FROM table WHERE field = $value"; ## SQL safe($value)
+
+That said, you should always convert your code to use placeholders instead
+where possible.
+
+
 =cut
 
 Readonly::Scalar my $DESCRIPTION => 'SQL injection risk.';
