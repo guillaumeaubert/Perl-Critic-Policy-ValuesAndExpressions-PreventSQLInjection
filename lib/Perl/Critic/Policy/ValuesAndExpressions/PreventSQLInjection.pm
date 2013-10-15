@@ -62,6 +62,19 @@ Readonly::Scalar my $EXPLANATION => 'Variables in interpolated SQL string are su
 
 =head1 FUNCTIONS
 
+=head2 supported_parameters()
+
+Return an array with information about the parameters supported.
+
+	my @supported_parameters = $policy->supported_parameters();
+
+=cut
+
+sub supported_parameters
+{
+	return ();
+}
+
 
 =head1 BUGS
 
