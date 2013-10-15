@@ -10,6 +10,7 @@ META.yml
 Makefile.PL
 Makefile.PL
 README.md
+examples/examples.txt
 ignore.txt
 lib/Perl/Critic/Policy/ValuesAndExpressions/PreventSQLInjection.pm
 t/00-load.t
