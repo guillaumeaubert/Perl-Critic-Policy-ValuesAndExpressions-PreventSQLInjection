@@ -118,6 +118,29 @@ sub applies_to
 }
 
 
+=head2 extract_variables()
+
+Extract variable names from a string.
+
+	my $variables = extract_variables( $string );
+
+=cut
+
+sub extract_variables
+{
+	my ( $string ) = @_;
+
+	my $variables = [];
+	while ( my ( $variable ) = $string =~ $VARIABLES_REGEX )
+	{
+		push( @$variables, $variable );
+		$string =~ s/\Q$variable\E//g;
+	}
+
+	return $variables;
+}
+
+
 =head2 get_safe_variables()
 
 Return a hashref with safe variable names as the keys.
