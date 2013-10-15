@@ -1,6 +1,8 @@
 Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
 ===========================================================
 
+[![Build Status](https://travis-ci.org/guillaumeaubert/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection.png?branch=master)](https://travis-ci.org/guillaumeaubert/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection)
+
 When building SQL statements manually instead of using an ORM, any input must
 be quoted or passed using placeholders to prevent the introduction of SQL
 injection vectors. This policy attempts to detect the most common sources of
