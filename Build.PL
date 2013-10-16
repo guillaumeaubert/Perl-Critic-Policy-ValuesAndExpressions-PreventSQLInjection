@@ -42,6 +42,7 @@ my $builder = $class->new(
 	build_requires       =>
 	{
 		'File::Spec'                 => 0,
+		'Test::Deep'                 => 0,
 		'Test::FailWarnings'         => 0,
 		'Test::More'                 => 0,
 		'Test::Perl::Critic::Policy' => 0,
