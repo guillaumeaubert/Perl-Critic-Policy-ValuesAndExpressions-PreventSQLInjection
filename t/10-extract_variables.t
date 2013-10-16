@@ -5,7 +5,7 @@ use warnings;
 
 use Perl::Critic::Policy::ValuesAndExpressions::PreventSQLInjection;
 use Test::Deep;
-use Test::FailWarnings;
+use Test::FailWarnings -allow_deps => 1;
 use Test::More;
 
 
