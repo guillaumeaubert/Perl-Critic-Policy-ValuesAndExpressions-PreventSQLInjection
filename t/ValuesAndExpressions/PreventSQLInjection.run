@@ -94,3 +94,39 @@ my $sql = "
 	SELECT $tables->{'table'}->{'fields'}->[0]
 	FROM table
 "; ## SQL safe ($tables->{'table'}->{'fields'}->[0])
+
+## name Heredoc with multiple variables.
+## failures 1
+## cut
+
+my $heredoc = <<__HERE__
+	SELECT $field_name
+	FROM $table
+__HERE__
+
+## name Double-quoted heredoc with multiple variables.
+## failures 1
+## cut
+
+my $heredoc = <<"HERE"
+	SELECT $field_name
+	FROM $table
+"HERE"
+
+## name Single-quoted heredoc with multiple variables.
+## failures 0
+## cut
+
+my $heredoc = <<'HERE'
+	SELECT $field_name
+	FROM $table
+'HERE'
+
+## name Heredoc with multiple variables (whitelisted).
+## failures 1
+## cut
+
+my $heredoc = <<__HERE__
+	SELECT $field_name
+	FROM $table
+__HERE__ ## SQL safe ($field_name, $table)
