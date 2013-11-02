@@ -100,10 +100,6 @@ This should probably be considered a violation:
 		$table
 	);
 
-=item * Parse heredoc
-
-This module does not analyze heredoc, but should since it interpolates variables by default.
-
 =back
 
 =cut
