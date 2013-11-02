@@ -197,7 +197,10 @@ Return the class of elements this policy applies to.
 
 sub applies_to
 {
-	return 'PPI::Token::Quote';
+	return qw(
+		PPI::Token::Quote
+		PPI::Token::HereDoc
+	);
 }
 
 
@@ -221,7 +224,23 @@ sub violates
 	my $sql_injections =
 	try
 	{
-		my $content = $element->content();
+		# PPI treats HereDoc differently than Quote and QuoteLike for the moment,
+		# this may however change in the future according to the documentation of
+		# PPI.
+		my $is_heredoc = $element->isa('PPI::Token::HereDoc');
+
+		# Retrieve the string's content.
+		my $content;
+		if ( $is_heredoc )
+		{
+			my @heredoc = $element->heredoc();
+			pop( @heredoc ); # Remove the heredoc termination tag.
+			$content = join( '', $element->heredoc() );
+		}
+		else
+		{
+			$content = $element->content();
+		}
 		return if $content !~ /\b (?: SELECT | INSERT | UPDATE | DELETE ) \b/ix;
 
 		# Comments will appear at the end of the element, so we need to
@@ -230,7 +249,10 @@ sub violates
 		my $extra_height_span =()= $content =~ /\n/g;
 		my $safe_variables = get_safe_variables(
 			$self,
-			$element->line_number() + $extra_height_span
+			$element->line_number()
+				+ $extra_height_span
+				# To account for the heredoc termination marker we removed above:
+				+ ( $is_heredoc ? 1 : 0 )
 		);
 		my $unsafe_variables = [
 			grep { !$safe_variables->{ $_ } }
@@ -250,6 +272,18 @@ sub violates
 
 			# Skip single quoted strings.
 			return if $lead eq 'q';
+
+			return $unsafe_variables
+				if scalar( @$unsafe_variables ) != 0;
+		}
+		elsif ( $is_heredoc )
+		{
+			# Single quoted heredocs are not interpolated, so they're safe.
+			# Note: '_mode' doesn't seem to be publicly accessible, and the tokenizer
+			#       destroys the part of the heredoc termination marker that would
+			#       allow determining whether it's interpolated, so the only option
+			#       is to rely on the private property of the element here.
+			return if $element->{'_mode'} ne 'interpolate';
 
 			return $unsafe_variables
 				if scalar( @$unsafe_variables ) != 0;
