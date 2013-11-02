@@ -243,9 +243,10 @@ sub violates
 		}
 		return if $content !~ /\b (?: SELECT | INSERT | UPDATE | DELETE ) \b/ix;
 
-		# Comments will appear at the end of the element, so we need to
-		# determine the ending line number instead of the beginning line
-		# number.
+		# Find the list of variables marked as safe using "## SQL safe".
+		# Note: comments will appear at the end of the element, so we need to
+		#       determine the ending line number instead of the beginning line
+		#       number.
 		my $extra_height_span =()= $content =~ /\n/g;
 		my $safe_variables = get_safe_variables(
 			$self,
@@ -254,11 +255,15 @@ sub violates
 				# To account for the heredoc termination marker we removed above:
 				+ ( $is_heredoc ? 1 : 0 )
 		);
+
+		# Find all the variables that appear in the string.
 		my $unsafe_variables = [
 			grep { !$safe_variables->{ $_ } }
 			@{ extract_variables( $content ) }
 		];
 
+		# Based on the element type, determine if it is interpolated and report any
+		# unsafe variables.
 		if ( $element->isa('PPI::Token::Quote::Double') )
 		{
 			return $unsafe_variables
