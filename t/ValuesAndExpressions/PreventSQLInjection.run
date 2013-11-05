@@ -123,7 +123,7 @@ my $heredoc = <<'HERE'
 'HERE'
 
 ## name Heredoc with multiple variables (whitelisted).
-## failures 1
+## failures 0
 ## cut
 
 my $heredoc = <<__HERE__
