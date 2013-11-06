@@ -231,7 +231,7 @@ sub violates
 		{
 			my @heredoc = $element->heredoc();
 			pop( @heredoc ); # Remove the heredoc termination tag.
-			$content = join( '', $element->heredoc() );
+			$content = join( '', @heredoc );
 		}
 		else
 		{
