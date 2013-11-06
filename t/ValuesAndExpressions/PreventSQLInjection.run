@@ -126,7 +126,7 @@ my $heredoc = <<'HERE'
 ## failures 0
 ## cut
 
-my $heredoc = <<__HERE__
+my $heredoc = <<__HERE__; ## SQL safe ($field_name $table)
 	SELECT $field_name
 	FROM $table
-__HERE__ ## SQL safe ($field_name, $table)
+__HERE__

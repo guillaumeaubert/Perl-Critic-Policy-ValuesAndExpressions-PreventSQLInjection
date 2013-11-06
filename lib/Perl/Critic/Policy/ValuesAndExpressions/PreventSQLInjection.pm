@@ -247,9 +247,8 @@ sub violates
 		my $safe_variables = get_safe_variables(
 			$self,
 			$element->line_number()
-				+ $extra_height_span
-				# To account for the heredoc termination marker we removed above:
-				+ ( $is_heredoc ? 1 : 0 )
+				# Heredoc comments will be on the same line as the opening marker.
+				+ ( $is_heredoc ? 0 : $extra_height_span ),
 		);
 
 		# Find all the variables that appear in the string.
