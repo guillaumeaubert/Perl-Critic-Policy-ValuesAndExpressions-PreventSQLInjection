@@ -287,6 +287,35 @@ sub is_sql_statement
 }
 
 
+=head2 get_token_content()
+
+Return the text content of a PPI token.
+
+	my $content = get_token_content( $token );
+
+=cut
+
+sub get_token_content
+{
+	my ( $token ) = @_;
+
+	# Retrieve the string's content.
+	my $content;
+	if ( $token->isa('PPI::Token::HereDoc') )
+	{
+		my @heredoc = $token->heredoc();
+		pop( @heredoc ); # Remove the heredoc termination tag.
+		$content = join( '', @heredoc );
+	}
+	else
+	{
+		$content = $token->content();
+	}
+
+	return $content;
+}
+
+
 =head2 analyze_sql_injections()
 
 Analyze a token and returns an arrayref of variables that are potential SQL
@@ -316,18 +345,7 @@ sub analyze_sql_injections
 		my $is_heredoc = $token->isa('PPI::Token::HereDoc');
 
 		# Retrieve the string's content.
-		my $content;
-		if ( $is_heredoc )
-		{
-			my @heredoc = $element->heredoc();
-			pop( @heredoc ); # Remove the heredoc termination tag.
-			$content = join( '', @heredoc );
-		}
-		else
-		{
-			$content = $element->content();
-		}
-		return if $content !~ /\b (?: SELECT | INSERT | UPDATE | DELETE ) \b/ix;
+		my $content = get_token_content( $token );
 
 		# Find the list of variables marked as safe using "## SQL safe".
 		# Note: comments will appear at the end of the token, so we need to
