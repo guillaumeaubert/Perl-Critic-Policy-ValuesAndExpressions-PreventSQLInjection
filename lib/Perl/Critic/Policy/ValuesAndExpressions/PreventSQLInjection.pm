@@ -268,6 +268,25 @@ sub violates
 }
 
 
+=head2 is_sql_statement()
+
+Return a boolean indicating whether a string is potentially the beginning of a SQL statement.
+
+	my $is_sql_statement = is_sql_statement( $token );
+
+=cut
+
+sub is_sql_statement
+{
+	my ( $token ) = @_;
+	my $content = get_token_content( $token );
+
+	return $content =~ /\b (?: SELECT | INSERT | UPDATE | DELETE ) \b/ix
+		? 1
+		: 0;
+}
+
+
 =head2 analyze_sql_injections()
 
 Analyze a token and returns an arrayref of variables that are potential SQL
