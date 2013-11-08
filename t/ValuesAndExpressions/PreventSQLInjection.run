@@ -130,3 +130,55 @@ my $heredoc = <<__HERE__; ## SQL safe ($field_name $table)
 	SELECT $field_name
 	FROM $table
 __HERE__
+
+## name Concatenated variable on multiple lines.
+## failures 1
+## cut
+
+my $sql = 'SELECT * FROM '
+	. $table
+	. ' WHERE test = 1';
+
+## name Concatenated variable.
+## failures 1
+## cut
+
+my $sql = 'SELECT * FROM ' . $table;
+
+## name Concatenated single-quoted strings.
+## failures 0
+## cut
+
+my $sql = 'SELECT * ' . 'FROM table_name';
+
+## name SQL-safe comments between concatenations (single comment).
+## failures 0
+## cut
+
+my $sql = "SELECT $fields " . ## SQL safe ($fields)
+	'FROM table_name';
+
+## name SQL-safe comments between concatenations (multiple comments).
+## failures 0
+## cut
+
+my $sql = "SELECT $fields " ## SQL safe ($fields)
+	. "FROM $table_name"      ## SQL safe($table_name)
+	. 'WHERE field = 1';
+
+## name SQL-safe comments between concatenations (no interpolation in first string).
+## failures 0
+## cut
+
+my $sql = "SELECT field2 "
+	. "FROM $table_name" ## SQL safe($table_name)
+	. 'WHERE field = 1';
+
+## name Concatenation with a function call.
+## failures 0
+## cut
+
+my $sql = "SELECT field2 "
+	. "FROM "
+	. get_table_name()
+	. 'WHERE field = 1';
