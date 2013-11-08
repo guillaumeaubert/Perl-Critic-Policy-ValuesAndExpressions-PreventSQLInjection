@@ -85,12 +85,6 @@ Possible future improvements for this module:
 
 =over 4
 
-=item * Detect concatenation
-
-Currently, this module only analyzes whole strings, and ignores concatenated strings or variables. For example, this would incorrectly not trigger a violation:
-
-	my $sql = 'SELECT * FROM ' . $table;
-
 =item * Detect use of sprintf()
 
 This should probably be considered a violation:
