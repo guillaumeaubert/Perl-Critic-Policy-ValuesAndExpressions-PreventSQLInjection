@@ -42,7 +42,7 @@
    "provides" : {
       "Perl::Critic::Policy::ValuesAndExpressions::PreventSQLInjection" : {
          "file" : "lib/Perl/Critic/Policy/ValuesAndExpressions/PreventSQLInjection.pm",
-         "version" : "v1.0.1"
+         "version" : "v1.1.0"
       }
    },
    "release_status" : "stable",
@@ -58,5 +58,5 @@
          "url" : "https://github.com/guillaumeaubert/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection"
       }
    },
-   "version" : "v1.0.1"
+   "version" : "v1.1.0"
 }

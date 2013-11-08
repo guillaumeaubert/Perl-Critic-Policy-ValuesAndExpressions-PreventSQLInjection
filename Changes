@@ -1,5 +1,10 @@
 Revision history for Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
 
+v1.1.0  2013-11-08
+        * Added detection of SQL injection flaws introduced via:
+            - heredoc blocks (GH-1);
+            - concatenation (GH-2).
+
 v1.0.1  2013-10-15
         * Added missing dependency.
         * Ignored warnings in dependencies when testing.
