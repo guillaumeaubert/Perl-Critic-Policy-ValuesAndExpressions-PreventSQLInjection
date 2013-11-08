@@ -94,6 +94,15 @@ This should probably be considered a violation:
 		$table
 	);
 
+=item * Detect use of $dbh->quote() and $dbh->quote_identifier()
+
+The following code will incorrectly trigger a violation:
+
+	my $sql = 'SELECT * FROM ' . $dbh->quote_identifier( $test );
+
+This is however quite a difficult problem, as the quote call can be hidden by
+several levels of indirection.
+
 =back
 
 =cut
