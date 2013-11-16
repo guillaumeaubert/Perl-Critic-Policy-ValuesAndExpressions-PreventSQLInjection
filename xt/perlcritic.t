@@ -6,7 +6,7 @@ use warnings;
 use File::Spec;
 use Test::More;
 
- 
+
 # Load Test::Perl::Critic.
 eval
 {
