@@ -246,6 +246,12 @@ sub violates
 		{
 			last;
 		}
+		# If it is a list-separating comma, this list element ends here and we can
+		# finish the process.
+		elsif ( $token->isa('PPI::Token::Operator') && $token->content() eq ',' )
+		{
+			last;
+		}
 		# If it is a symbol, it is concatenated to a SQL statement which is an
 		# injection risk.
 		elsif ( $token->isa('PPI::Token::Symbol') )

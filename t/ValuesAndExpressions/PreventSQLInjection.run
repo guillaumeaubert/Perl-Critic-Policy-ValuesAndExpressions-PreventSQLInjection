@@ -182,3 +182,8 @@ my $sql = "SELECT field2 "
 	. "FROM "
 	. get_table_name()
 	. 'WHERE field = 1';
+
+## name String as part of a list with variables in some list elements.
+## failures 0
+## cut
+my ( $value ) = $dbh->selectrow_array( 'SELECT function(?)', undef, $input );
