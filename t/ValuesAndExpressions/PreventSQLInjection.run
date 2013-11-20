@@ -187,3 +187,8 @@ my $sql = "SELECT field2 "
 ## failures 0
 ## cut
 my ( $value ) = $dbh->selectrow_array( 'SELECT function(?)', undef, $input );
+
+## name Non-SQL string with a SQL keyword in non-leading position.
+## failures 0
+## cut
+my $sql = "The information will UPDATE in $delay hours";
