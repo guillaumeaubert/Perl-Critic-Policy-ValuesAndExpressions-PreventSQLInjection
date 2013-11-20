@@ -316,6 +316,11 @@ sub get_token_content
 		pop( @heredoc ); # Remove the heredoc termination tag.
 		$content = join( '', @heredoc );
 	}
+	elsif ( $token->isa('PPI::Token::Quote' ) )
+	{
+		# ->string() strips off the leading and trailing quotation signs.
+		$content = $token->string();
+	}
 	else
 	{
 		$content = $token->content();
@@ -383,8 +388,9 @@ sub analyze_sql_injections
 		}
 		elsif ( $token->isa('PPI::Token::Quote::Interpolate') )
 		{
-			my ( $lead ) = $content =~ /\A(qq?)([^q])/s;
-			croak "Unknown format for >$content<"
+			my $raw_content = $token->content();
+			my ( $lead ) = $raw_content =~ /\A(qq?)([^q])/s;
+			croak "Unknown format for >$raw_content<"
 				if !defined( $lead );
 
 			# Skip single quoted strings.
