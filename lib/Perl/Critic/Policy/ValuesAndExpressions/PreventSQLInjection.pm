@@ -290,7 +290,7 @@ sub is_sql_statement
 	my ( $token ) = @_;
 	my $content = get_token_content( $token );
 
-	return $content =~ /\b (?: SELECT | INSERT | UPDATE | DELETE ) \b/ix
+	return $content =~ /^ \s* (?: SELECT | INSERT | UPDATE | DELETE ) \b/six
 		? 1
 		: 0;
 }
