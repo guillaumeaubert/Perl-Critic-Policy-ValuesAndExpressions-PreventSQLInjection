@@ -1,5 +1,9 @@
 Revision history for Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
 
+v1.1.3  2013-11-20
+        * Decreased false-positive by looking for SQL keywords at the beginning
+          of the strings (GH-6).
+
 v1.1.2  2013-11-19
         * Fixed detection of the end of SQL statements in array elements
           (GH-5).
