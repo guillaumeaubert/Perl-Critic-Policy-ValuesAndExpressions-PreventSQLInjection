@@ -1,7 +1,8 @@
 Revision history for Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
 
 v1.1.2  2013-11-19
-        * Fixed detection of the end of SQL statements in array elements.
+        * Fixed detection of the end of SQL statements in array elements
+          (GH-5).
 
 v1.1.1  2013-11-09
         * Support for Perl v5.8.
