@@ -192,3 +192,8 @@ my ( $value ) = $dbh->selectrow_array( 'SELECT function(?)', undef, $input );
 ## failures 0
 ## cut
 my $sql = "The information will UPDATE in $delay hours";
+
+## name Concatenated variables listed as safe.
+## failures 0
+## cut
+$sql .= "UPDATE table_name." . $self->{service} . " SET deleted_at = NOW() WHERE id = " . $map->{system_id} . " AND deleted_at IS NULL"; ## SQL safe ( $self $map )
