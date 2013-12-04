@@ -515,7 +515,7 @@ sub parse_comments
 		SQL \s+ safe
 		\s*
 		# List of safe variables between parenthesis, space separated.
-		\((.*?)\)
+		\(\s*(.*?)\s*\)
 	/ixms;
 
 	# Parse all the comments for this document.
