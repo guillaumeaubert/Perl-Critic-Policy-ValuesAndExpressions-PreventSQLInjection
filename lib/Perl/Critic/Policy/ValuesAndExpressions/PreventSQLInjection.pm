@@ -280,6 +280,50 @@ sub violates
 }
 
 
+=head2 get_complete_variable()
+
+Retrieve a complete variable starting with a PPI::Token::Symbol object.
+
+	my $variable = get_complete_variable( $token );
+
+For example, if you have $variable->{test}->[0] in your code, PPI will identify
+$variable as a PPI::Token::Symbol, and calling this function on that token will
+return the whole "$variable->{test}->[0]" string.
+
+=cut
+
+sub get_complete_variable
+{
+	my ( $token ) = @_;
+
+	croak 'The first parameter needs to be a PPI::Token::Symbol object'
+		if !$token->isa('PPI::Token::Symbol');
+
+	my $variable = $token->content();
+	my $sibling = $token;
+	while ( 1 )
+	{
+		$sibling = $sibling->next_sibling();
+		last if !defined( $sibling ) || ( $sibling eq '' );
+
+		if ( $sibling->isa('PPI::Token::Operator') && $sibling->content() eq '->' )
+		{
+			$variable .= '->';
+		}
+		elsif ( $sibling->isa('PPI::Structure::Subscript') )
+		{
+			$variable .= $sibling->content();
+		}
+		else
+		{
+			last;
+		}
+	}
+
+	return $variable;
+}
+
+
 =head2 is_sql_statement()
 
 Return a boolean indicating whether a string is potentially the beginning of a SQL statement.
