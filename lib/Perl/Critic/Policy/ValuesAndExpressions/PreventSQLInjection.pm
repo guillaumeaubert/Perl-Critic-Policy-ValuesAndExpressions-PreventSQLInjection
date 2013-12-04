@@ -257,7 +257,7 @@ sub violates
 		elsif ( $token->isa('PPI::Token::Symbol') )
 		{
 			my $safe_variables = get_safe_variables( $self, $token->line_number() );
-			my $variable = $token->content();
+			my $variable = get_complete_variable( $token );
 			push( @$sql_injections, $variable )
 				if !exists( $safe_variables->{ $variable } );
 		}
