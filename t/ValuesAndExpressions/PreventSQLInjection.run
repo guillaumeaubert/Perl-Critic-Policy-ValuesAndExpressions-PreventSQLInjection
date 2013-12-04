@@ -196,4 +196,24 @@ my $sql = "The information will UPDATE in $delay hours";
 ## name Concatenated variables listed as safe.
 ## failures 0
 ## cut
-$sql .= "UPDATE table_name." . $self->{service} . " SET deleted_at = NOW() WHERE id = " . $map->{system_id} . " AND deleted_at IS NULL"; ## SQL safe ( $self $map )
+$sql .= "UPDATE table_name." . $self->{service} . " SET deleted_at = NOW() WHERE id = " . $map->{system_id} . " AND deleted_at IS NULL"; ## SQL safe ( $self->{service} $map->{system_id} )
+
+## name Deeply nested concatenated variable not listed as safe.
+## failures 1
+## cut
+$sql .= "UPDATE table_name." . $self{service}->[0]->{'test'};
+
+## name Deeply nested concatenated variable not specifically listed as safe.
+## failures 1
+## cut
+$sql .= "UPDATE table_name." . $self{service}->[0]->{'test'}; ## SQL safe ($self)
+
+## name Deeply nested concatenated variable listed as safe with a different syntax.
+## failures 1
+## cut
+$sql .= "UPDATE table_name." . $self{service}->[0]->{'test'}; ## SQL safe ($self{'service'}->[0]->{'test'})
+
+## name Deeply nested concatenated variable listed as safe.
+## failures 0
+## cut
+$sql .= "UPDATE table_name." . $self{service}->[0]->{'test'}; ## SQL safe ($self{service}->[0]->{'test'})
