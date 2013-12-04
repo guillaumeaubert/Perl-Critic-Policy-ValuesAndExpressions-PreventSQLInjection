@@ -256,7 +256,10 @@ sub violates
 		# injection risk.
 		elsif ( $token->isa('PPI::Token::Symbol') )
 		{
-			push( @$sql_injections, $token->content() );
+			my $safe_variables = get_safe_variables( $self, $token->line_number() );
+			my $variable = $token->content();
+			push( @$sql_injections, $variable )
+				if !exists( $safe_variables->{ $variable } );
 		}
 
 		# Move to examining the next sibling token.
