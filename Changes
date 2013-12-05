@@ -1,5 +1,9 @@
 Revision history for Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
 
+v1.1.5  2013-12-05
+				* Added detection of quote() and quote_identifier(), to prevent the
+          detection of false-positives (GH-8).
+
 v1.1.4  2013-12-03
         * Fixed whitelisting of concatenated variables (GH-7).
 
