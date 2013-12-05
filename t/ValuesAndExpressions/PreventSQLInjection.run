@@ -217,3 +217,18 @@ $sql .= "UPDATE table_name." . $self{service}->[0]->{'test'}; ## SQL safe ($self
 ## failures 0
 ## cut
 $sql .= "UPDATE table_name." . $self{service}->[0]->{'test'}; ## SQL safe ($self{service}->[0]->{'test'})
+
+## name Use of quote_identifier().
+## failures 0
+## cut
+$sql = "UPDATE " . $dbh->quote_identifier($table_name) . " SET ";
+
+## name Use of quote().
+## failures 0
+## cut
+$sql = "UPDATE table_name SET field = " . $dbh->quote($value) . "WHERE field = 1";
+
+## name Partial use of quote() and quote_identifier().
+## failures 1
+## cut
+$sql = "UPDATE " . $dbh->quote_identifier($table_name) . " SET field = " . $dbh->quote($value) . "WHERE field = $test";

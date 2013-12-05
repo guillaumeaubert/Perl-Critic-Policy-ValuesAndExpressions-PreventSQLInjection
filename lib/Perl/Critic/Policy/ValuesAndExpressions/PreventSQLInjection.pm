@@ -141,6 +141,15 @@ Readonly::Scalar my $VARIABLES_REGEX => qr/
 	)
 /x;
 
+# Name of the methods that make a variable safe to use in SQL strings.
+Readonly::Scalar my $QUOTING_METHODS_REGEX => qr/
+	(?:
+		quote_identifier
+		|
+		quote
+	)
+/x;
+
 
 =head1 FUNCTIONS
 
@@ -256,10 +265,13 @@ sub violates
 		# injection risk.
 		elsif ( $token->isa('PPI::Token::Symbol') )
 		{
-			my $safe_variables = get_safe_variables( $self, $token->line_number() );
-			my $variable = get_complete_variable( $token );
-			push( @$sql_injections, $variable )
-				if !exists( $safe_variables->{ $variable } );
+			my ( $variable, $is_quoted ) = get_complete_variable( $token );
+			if ( !$is_quoted )
+			{
+				my $safe_variables = get_safe_variables( $self, $token->line_number() );
+				push( @$sql_injections, $variable )
+					if !exists( $safe_variables->{ $variable } );
+			}
 		}
 
 		# Move to examining the next sibling token.
@@ -282,9 +294,11 @@ sub violates
 
 =head2 get_complete_variable()
 
-Retrieve a complete variable starting with a PPI::Token::Symbol object.
+Retrieve a complete variable starting with a PPI::Token::Symbol object, and
+indicate if the variable has used a quoting method to make it safe to use
+directly in SQL strings.
 
-	my $variable = get_complete_variable( $token );
+	my ( $variable, $is_quoted ) = get_complete_variable( $token );
 
 For example, if you have $variable->{test}->[0] in your code, PPI will identify
 $variable as a PPI::Token::Symbol, and calling this function on that token will
@@ -300,6 +314,7 @@ sub get_complete_variable
 		if !$token->isa('PPI::Token::Symbol');
 
 	my $variable = $token->content();
+	my $is_quoted = 0;
 	my $sibling = $token;
 	while ( 1 )
 	{
@@ -314,13 +329,21 @@ sub get_complete_variable
 		{
 			$variable .= $sibling->content();
 		}
+		elsif ( $sibling->isa('PPI::Token::Word')
+			&& $sibling->method_call()
+			&& ( $sibling->content =~ $QUOTING_METHODS_REGEX )
+		)
+		{
+			$is_quoted = 1;
+			last;
+		}
 		else
 		{
 			last;
 		}
 	}
 
-	return $variable;
+	return ( $variable, $is_quoted );
 }
 
 
