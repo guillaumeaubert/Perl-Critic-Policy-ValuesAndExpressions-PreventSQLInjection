@@ -143,11 +143,13 @@ Readonly::Scalar my $VARIABLES_REGEX => qr/
 
 # Name of the methods that make a variable safe to use in SQL strings.
 Readonly::Scalar my $QUOTING_METHODS_REGEX => qr/
+	^
 	(?:
 		quote_identifier
 		|
 		quote
 	)
+	$
 /x;
 
 
