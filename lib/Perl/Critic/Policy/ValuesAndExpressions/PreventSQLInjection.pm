@@ -152,6 +152,21 @@ Readonly::Scalar my $QUOTING_METHODS_REGEX => qr/
 	$
 /x;
 
+# Regex to detect comments like ## SQL safe ($var1, $var2).
+Readonly::Scalar my $SQL_SAFE_COMMENTS_REGEX => qr/
+	\A
+	(?: [#]! .*? )?
+	\s*
+	# Find the ## annotation starter.
+	[#][#]
+	\s*
+	# "SQL safe" is our keyword.
+	SQL \s+ safe
+	\s*
+	# List of safe variables between parentheses.
+	\(\s*(.*?)\s*\)
+/ixms;
+
 
 =head1 FUNCTIONS
 
@@ -575,28 +590,13 @@ sub parse_comments
 	return
 		if defined( $self->{'_sqlsafe'} );
 
-	# Regex to detect comments like ## SQL safe ($var1, $var2)
-	my $comments_regex = qr/
-		\A
-		(?: [#]! .*? )?
-		\s*
-		# Find the ## annotation starter.
-		[#][#]
-		\s*
-		# "SQL safe" is our keyword.
-		SQL \s+ safe
-		\s*
-		# List of safe variables between parenthesis, space separated.
-		\(\s*(.*?)\s*\)
-	/ixms;
-
 	# Parse all the comments for this document.
 	$self->{'_sqlsafe'} = {};
 	my $comments = $doc->find('PPI::Token::Comment') || [];
 	foreach my $comment ( @$comments )
 	{
 		# Determine if the line is a "SQL safe" comment.
-		my ( $safe_variables ) = $comment =~ $comments_regex;
+		my ( $safe_variables ) = $comment =~ $SQL_SAFE_COMMENTS_REGEX;
 		next if !defined( $safe_variables );
 
 		# Store list of safe variables for that line.
