@@ -232,3 +232,11 @@ $sql = "UPDATE table_name SET field = " . $dbh->quote($value) . "WHERE field = 1
 ## failures 1
 ## cut
 $sql = "UPDATE " . $dbh->quote_identifier($table_name) . " SET field = " . $dbh->quote($value) . "WHERE field = $test";
+
+## name Comma-separated safe variables.
+## failures 0
+## cut
+my $sql = "
+	SELECT $self{'service name'}->[0]->{'test name'}
+	FROM $table
+"; ## SQL safe ($self{'service name'}->[0]->{'test name'}, $table)
