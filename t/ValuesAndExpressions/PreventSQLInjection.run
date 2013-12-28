@@ -186,61 +186,73 @@ my $sql = "SELECT field2 "
 ## name String as part of a list with variables in some list elements.
 ## failures 0
 ## cut
+
 my ( $value ) = $dbh->selectrow_array( 'SELECT function(?)', undef, $input );
 
 ## name Non-SQL string with a SQL keyword in non-leading position.
 ## failures 0
 ## cut
+
 my $sql = "The information will UPDATE in $delay hours";
 
 ## name Concatenated variables listed as safe.
 ## failures 0
 ## cut
+
 $sql .= "UPDATE table_name." . $self->{service} . " SET deleted_at = NOW() WHERE id = " . $map->{system_id} . " AND deleted_at IS NULL"; ## SQL safe ( $self->{service} $map->{system_id} )
 
 ## name Deeply nested concatenated variable not listed as safe.
 ## failures 1
 ## cut
+
 $sql .= "UPDATE table_name." . $self{service}->[0]->{'test'};
 
 ## name Deeply nested concatenated variable not specifically listed as safe.
 ## failures 1
 ## cut
+
 $sql .= "UPDATE table_name." . $self{service}->[0]->{'test'}; ## SQL safe ($self)
 
 ## name Deeply nested concatenated variable listed as safe with a different syntax.
 ## failures 1
 ## cut
+
 $sql .= "UPDATE table_name." . $self{service}->[0]->{'test'}; ## SQL safe ($self{'service'}->[0]->{'test'})
 
 ## name Deeply nested concatenated variable listed as safe.
 ## failures 0
 ## cut
+
 $sql .= "UPDATE table_name." . $self{service}->[0]->{'test'}; ## SQL safe ($self{service}->[0]->{'test'})
 
 ## name Use of quote_identifier().
 ## failures 0
 ## cut
+
 $sql = "UPDATE " . $dbh->quote_identifier($table_name) . " SET ";
 
 ## name Use of quote().
 ## failures 0
 ## cut
+
 $sql = "UPDATE table_name SET field = " . $dbh->quote($value) . "WHERE field = 1";
 
 ## name Partial use of quote() and quote_identifier().
 ## failures 1
 ## cut
+
 $sql = "UPDATE " . $dbh->quote_identifier($table_name) . " SET field = " . $dbh->quote($value) . "WHERE field = $test";
 
 ## name Safe variables with space in the hash key names.
 ## failures 0
 ## cut
+
 $sql .= "UPDATE table_name." . $self{'service name'}->[0]->{'test name'}; ## SQL safe ($self{'service name'}->[0]->{'test name'})
 
 ## name Comma-separated safe variables.
 ## failures 0
 ## cut
+
 my $sql = "
 	SELECT $self{'service name'}->[0]->{'test name'}
 	FROM $table
