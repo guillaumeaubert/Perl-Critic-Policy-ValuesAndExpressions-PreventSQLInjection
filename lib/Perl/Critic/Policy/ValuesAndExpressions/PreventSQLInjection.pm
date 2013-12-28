@@ -133,9 +133,9 @@ Readonly::Scalar my $VARIABLES_REGEX => qr/
 			(?:->)?
 			# Can be followed by either a hash or an array.
 			(?:
-				\{['"]?\w+['"]?\} # Hash element.
+				\{(?:\w+|'[^']+'|"[^"]+")\}  # Hash element.
 				|
-				\[['"]?\d+['"]?\] # Array element.
+				\[['"]?\d+['"]?\]            # Array element.
 			)
 		)*
 	)
