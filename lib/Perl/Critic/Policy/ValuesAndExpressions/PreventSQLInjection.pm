@@ -531,6 +531,7 @@ sub extract_variables
 		push( @$variables, $variable );
 		$string =~ s/\Q$variable\E//g;
 	}
+	#print STDERR "Interpolated variables: ", Dumper( $variables ), "\n";
 
 	return $variables;
 }
@@ -606,7 +607,7 @@ sub parse_comments
 		);
 	}
 
-	#print Dumper( $self->{'_sqlsafe'} ), "\n";
+	#print STDERR "SQL safe variables: ", Dumper( $self->{'_sqlsafe'} ), "\n";
 	return;
 }
 
