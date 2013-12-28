@@ -233,6 +233,11 @@ $sql = "UPDATE table_name SET field = " . $dbh->quote($value) . "WHERE field = 1
 ## cut
 $sql = "UPDATE " . $dbh->quote_identifier($table_name) . " SET field = " . $dbh->quote($value) . "WHERE field = $test";
 
+## name Safe variables with space in the hash key names.
+## failures 0
+## cut
+$sql .= "UPDATE table_name." . $self{'service name'}->[0]->{'test name'}; ## SQL safe ($self{'service name'}->[0]->{'test name'})
+
 ## name Comma-separated safe variables.
 ## failures 0
 ## cut
