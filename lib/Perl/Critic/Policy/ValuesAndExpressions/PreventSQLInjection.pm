@@ -602,7 +602,7 @@ sub parse_comments
 		# Store list of safe variables for that line.
 		push(
 			@{ $self->{'_sqlsafe'}->{ $comment->line_number() } },
-			split( /[\s,]+)/, $safe_variables )
+			split( /[\s,]+(?=[\$\@\%])/, $safe_variables )
 		);
 	}
 
