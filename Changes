@@ -1,5 +1,12 @@
 Revision history for Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
 
+v1.2.0  2013-12-30
+				* Added support for commas (in addition to spaces) in safe variable
+          lists (GH-9).
+        * Fixed detection of array indexes in variables.
+        * Fixed parsing of spaces in quoted hash keys.
+        * Tightened detection of quoting methods.
+
 v1.1.5  2013-12-05
 				* Added detection of quote() and quote_identifier(), to prevent the
           detection of false-positives (GH-8).
