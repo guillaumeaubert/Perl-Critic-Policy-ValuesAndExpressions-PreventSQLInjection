@@ -76,6 +76,10 @@ whitelisting specific variables:
 That said, you should always convert your code to use placeholders instead
 where possible.
 
+Note: this policy supports both comma-separated and space-separated lists to
+describe safe variables. In other words, C<## SQL safe ($var1, $var2, ...)> and
+C<## SQL safe ($var1 $var2 ...)> are strictly equivalent.
+
 
 =head1 LIMITATIONS
 
