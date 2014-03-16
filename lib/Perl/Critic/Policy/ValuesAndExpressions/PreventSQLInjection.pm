@@ -276,6 +276,14 @@ sub violates
 		{
 			last;
 		}
+		# If we detect a ':' operator, we're at the end of the second argument in a
+		# ternary "... ? ... : ..." and we need to finish the process here as the
+		# third argument is not concatenated to the this string and will be
+		# analyzed separately.
+		elsif ( $token->isa('PPI::Token::Operator') && $token->content() eq ':' )
+		{
+			last;
+		}
 		# If it is a list-separating comma, this list element ends here and we can
 		# finish the process.
 		elsif ( $token->isa('PPI::Token::Operator') && $token->content() eq ',' )
