@@ -261,12 +261,14 @@ my $sql = "
 ## name Ternary operator (GH-12).
 ## failures 0
 ## cut
+
 my $a = 1;
 my $x = $a ? 'update' : $b;
 
 ## name Ternary operator with possible SQL injection (true case).
 ## failures 1
 ## cut
+
 $test
 	? 'update' . ' ' . $table
 	: $var;
@@ -274,6 +276,7 @@ $test
 ## name Ternary operator with possible SQL injection (false case).
 ## failures 1
 ## cut
+
 $test
 	? $var
 	: 'update' . ' ' . $table;
@@ -281,6 +284,7 @@ $test
 ## name Ternary operator with possible SQL injections (both cases).
 ## failures 2
 ## cut
+
 $test
 	? 'insert into ' . $table
 	: 'update' . ' ' . $table;
