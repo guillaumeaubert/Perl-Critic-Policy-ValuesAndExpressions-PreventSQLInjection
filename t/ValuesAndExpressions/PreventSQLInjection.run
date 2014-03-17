@@ -193,12 +193,21 @@ my $sql = "SELECT field2 "
 	. 'WHERE field = 1';
 
 ## name Concatenation with a function call.
-## failures 0
+## failures 1
 ## cut
 
 my $sql = "SELECT field2 "
 	. "FROM "
 	. get_table_name()
+	. 'WHERE field = 1';
+
+## name Concatenation with a function call marked as safe.
+## failures 0
+## cut
+
+my $sql = "SELECT field2 "
+	. "FROM "
+	. get_table_name() ## SQL safe (get_table_name)
 	. 'WHERE field = 1';
 
 ## name String as part of a list with variables in some list elements.
