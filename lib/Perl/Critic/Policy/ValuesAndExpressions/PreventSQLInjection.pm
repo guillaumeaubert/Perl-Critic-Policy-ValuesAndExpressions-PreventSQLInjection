@@ -98,6 +98,32 @@ This should probably be considered a violation:
 		$table
 	);
 
+=item * Detect use of constants
+
+This should not be considered a violation, since constants cannot be modified
+by user input:
+
+	use Const::Fast;
+	const my $FOOBAR => 12;
+
+	$dbh->do("SELECT name FROM categories WHERE id = $FOOBAR");
+
+=item * Detect SQL string modifications.
+
+Currently, this module only analyzes strings when they are declared, and does not account for later modifications.
+
+This should be reviewed as part of this module:
+
+	my $sql = "select from ";
+	$sql .= $table;
+
+As well as this:
+
+	my $sql = "select from ";
+	$sql = "$sql $table";
+
+=item
+
 =back
 
 =cut
