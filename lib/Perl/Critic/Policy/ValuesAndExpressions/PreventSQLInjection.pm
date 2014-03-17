@@ -157,6 +157,12 @@ Readonly::Scalar my $QUOTING_METHODS_REGEX => qr/
 	$
 /x;
 
+# Name of the packages and functions / class methods that are safe to
+# concatenate to SQL strings.
+# TODO: make this configurable via .perlcriticrc.
+Readonly::Scalar my $SAFE_FUNCTIONS => [
+];
+
 # Regex to detect comments like ## SQL safe ($var1, $var2).
 Readonly::Scalar my $SQL_SAFE_COMMENTS_REGEX => qr/
 	\A
@@ -301,6 +307,19 @@ sub violates
 				my $safe_variables = get_safe_variables( $self, $token->line_number() );
 				push( @$sql_injections, $variable )
 					if !exists( $safe_variables->{ $variable } );
+			}
+		}
+		# If it is a word, it may be a function/method call on a package, which is
+		# an injection risk.
+		elsif ( $token->isa('PPI::Token::Word') )
+		{
+			# Find out if the PPO::Token::Word is the beginning of a call or not.
+			my ( $function_name, $is_quoted ) = get_function_name( $token );
+			if ( defined( $function_name ) && !$is_quoted )
+			{
+				my $safe_variables = get_safe_variables( $self, $token->line_number() );
+				push( @$sql_injections, $function_name )
+					if !exists( $safe_variables->{ $function_name } );
 			}
 		}
 
