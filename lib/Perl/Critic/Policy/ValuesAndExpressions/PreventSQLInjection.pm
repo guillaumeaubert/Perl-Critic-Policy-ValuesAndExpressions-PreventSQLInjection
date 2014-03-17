@@ -146,6 +146,7 @@ Readonly::Scalar my $VARIABLES_REGEX => qr/
 /x;
 
 # Name of the methods that make a variable safe to use in SQL strings.
+# TODO: make this configurable via .perlcriticrc.
 Readonly::Scalar my $QUOTING_METHODS_REGEX => qr/
 	^
 	(?:
