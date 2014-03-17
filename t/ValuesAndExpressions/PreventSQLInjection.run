@@ -315,3 +315,43 @@ $test
 $test
 	? 'insert into ' . $table
 	: 'update' . ' ' . $table;
+
+## name Class method call.
+## failures 1
+## cut
+
+my $sql = "select * from " . Acme::XYZ->method($table);
+
+## name Class method call marked as safe.
+## failures 0
+## cut
+
+my $sql = "select * from "
+	. Acme::XYZ->method($table); ## SQL safe (Acme::XYZ::method)
+
+## name Class method call (with spacing).
+## failures 1
+## cut
+
+my $sql = "select * from " . Acme::XYZ
+	->method($table);
+
+## name Class method call (with spacing) marked as safe.
+## failures 0
+## cut
+
+my $sql = "select * from " . Acme::XYZ ## SQL safe (Acme::XYZ::method)
+	->method($table);
+
+## name Function call to a different namespace.
+## failures 1
+## cut
+
+my $sql = "select * from " . Acme::XYZ::method($table);
+
+## name Function call to a different namespace marked as safe.
+## failures 0
+## cut
+
+my $sql = "select * from "
+	. Acme::XYZ::method($table); ## SQL safe (Acme::XYZ::method)
