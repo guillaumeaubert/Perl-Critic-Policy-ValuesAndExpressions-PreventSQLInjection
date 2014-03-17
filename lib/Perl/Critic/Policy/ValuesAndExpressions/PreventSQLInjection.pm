@@ -322,6 +322,80 @@ sub violates
 }
 
 
+=head2 get_function_name()
+
+Retrieve full name (including the package name) of a class function/method
+based on a PPI::Token::Word object, and indicate if it is a call that returns
+quoted data making it safe to include directly into SQL strings.
+
+	my ( $function_name, $is_quoted ) = get_function_name( $token );
+
+=cut
+
+sub get_function_name
+{
+	my ( $token ) = @_;
+
+	croak 'The first parameter needs to be a PPI::Token::Word object'
+		if !$token->isa('PPI::Token::Word');
+
+	my $next_sibling = $token->snext_sibling();
+	return ()
+		if !defined( $next_sibling ) || ( $next_sibling eq '' );
+
+	my ( $package, $function_name );
+
+	# Catch Package::Name->method().
+	if ( $next_sibling->isa('PPI::Token::Operator') && ( $next_sibling->content() eq '->' ) )
+	{
+		my $function = $next_sibling->snext_sibling();
+
+		return ()
+			if !defined( $function ) || ( $function eq '' );
+		return ()
+			if !$function->isa('PPI::Token::Word');
+
+		$package = $token->content();
+		$function_name = $function->content();
+
+		$function->{'_handled'} = 1;
+	}
+	# Catch Package::Name::function().
+	elsif ( $next_sibling->isa('PPI::Structure::List') )
+	{
+		# Package::Name->method() will result in two PPI::Token::Word being
+		# detected, one for 'Package::Name' and one for 'method'. 'Package::Name'
+		# will be caught in the if() block above, but 'method' would get caught
+		# separately by this block. To prevent this, we scan the previous sibling
+		# here and skip if we find that it is a '->' operator.
+		my $previous_sibling = $token->sprevious_sibling();
+		return ()
+			if $previous_sibling->isa('PPI::Token::Operator') && ( $previous_sibling->content() eq '->' );
+
+		my $content = $token->content();
+
+		# Catch function calls in the same namespace.
+		if ( $content !~ /::/ )
+		{
+			( $package, $function_name ) = ( undef, $content );
+		}
+		# Catch function calls in a different namespace.
+		else
+		{
+			( $package, $function_name ) = $content =~ /^(.*)::([^:]+)$/;
+		}
+	}
+	else
+	{
+		return ();
+	}
+
+	my $full_name = join( '::', grep { defined( $_ ) } ( $package, $function_name ) );
+	my $is_safe = scalar( grep { $full_name eq $_ } @$SAFE_FUNCTIONS ) == 0 ? 0 : 1;
+	return ( $full_name, $is_safe );
+}
+
+
 =head2 get_complete_variable()
 
 Retrieve a complete variable starting with a PPI::Token::Symbol object, and
