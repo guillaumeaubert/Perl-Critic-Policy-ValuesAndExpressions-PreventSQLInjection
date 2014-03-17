@@ -54,7 +54,7 @@ But would leave alone:
 There is no configuration option available for this policy.
 
 
-=head1 MARKING VARIABLES AS SAFE
+=head1 MARKING ELEMENTS AS SAFE
 
 You can disable this policy on a particular string with the usual PerlCritic
 syntax:
@@ -68,17 +68,57 @@ it was previously quoted with something such as:
 
 The risk there is that someone will later modify your code and introduce unsafe
 variables by accident, which will then not get reported. To prevent this, this
-module has a special C<## SQL safe ($var1, $var2, ...)> syntax which allows
-whitelisting specific variables:
+module has a special C<## SQL safe (...)> syntax described below.
+
+=head2 Marking variables as safe
+
+To indicate that a variable has been manually checked and determined to be
+safe, add a comment on the same line using this syntax: C<## SQL safe ($var1,
+$var2, ...)>.
+
+For example:
 
 	my $sql = "SELECT * FROM table WHERE field = $value"; ## SQL safe($value)
 
 That said, you should always convert your code to use placeholders instead
 where possible.
 
-Note: this policy supports both comma-separated and space-separated lists to
+=head2 Marking functions / class methods as safe
+
+To indicate that a function or class method has been manually checked and
+determined that it will always return a safe output, add comment on the same
+line using the C<## SQL safe(function_name>) syntax:
+
+	my $sql = "SELECT * FROM table WHERE field = "
+		. some_safe_method( $value ); ## SQL safe(some_safe_method)
+
+	my $sql = "SELECT * FROM table WHERE field = "
+		. Package::Name::some_safe_method( $value ); ## SQL safe(Package::Name::some_safe_method)
+
+Note that class methods (a function called with C<-E<gt>> on a package name)
+still need to be declared with C<::> in the list of safe elements:
+
+	my $sql = "SELECT * FROM table WHERE field = "
+		. Package::Name->some_safe_method( $value ); ## SQL safe(Package::Name::some_safe_method)
+
+
+=head2 SQL safe syntax notes
+
+=over 4
+
+=item *
+
+This policy supports both comma-separated and space-separated lists to
 describe safe variables. In other words, C<## SQL safe ($var1, $var2, ...)> and
 C<## SQL safe ($var1 $var2 ...)> are strictly equivalent.
+
+=item *
+
+You can mix function names and variables in the comments to describe safe elements:
+
+	C<## SQL safe ($var1, function_name, $var2, ...)>
+
+=back
 
 
 =head1 LIMITATIONS
