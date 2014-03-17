@@ -321,9 +321,9 @@ sub violates
 			my ( $variable, $is_quoted ) = get_complete_variable( $token );
 			if ( !$is_quoted )
 			{
-				my $safe_variables = get_safe_variables( $self, $token->line_number() );
+				my $safe_elements = get_safe_elements( $self, $token->line_number() );
 				push( @$sql_injections, $variable )
-					if !exists( $safe_variables->{ $variable } );
+					if !exists( $safe_elements->{ $variable } );
 			}
 		}
 		# If it is a word, it may be a function/method call on a package, which is
@@ -334,9 +334,9 @@ sub violates
 			my ( $function_name, $is_quoted ) = get_function_name( $token );
 			if ( defined( $function_name ) && !$is_quoted )
 			{
-				my $safe_variables = get_safe_variables( $self, $token->line_number() );
+				my $safe_elements = get_safe_elements( $self, $token->line_number() );
 				push( @$sql_injections, $function_name )
-					if !exists( $safe_variables->{ $function_name } );
+					if !exists( $safe_elements->{ $function_name } );
 			}
 		}
 
@@ -575,7 +575,7 @@ sub analyze_sql_injections
 		#       determine the ending line number instead of the beginning line
 		#       number.
 		my $extra_height_span =()= $content =~ /\n/g;
-		my $safe_variables = get_safe_variables(
+		my $safe_elements = get_safe_elements(
 			$policy, #$self
 			$token->line_number()
 				# Heredoc comments will be on the same line as the opening marker.
@@ -584,7 +584,7 @@ sub analyze_sql_injections
 
 		# Find all the variables that appear in the string.
 		my $unsafe_variables = [
-			grep { !$safe_variables->{ $_ } }
+			grep { !$safe_elements->{ $_ } }
 			@{ extract_variables( $content ) }
 		];
 
@@ -659,18 +659,18 @@ sub extract_variables
 }
 
 
-=head2 get_safe_variables()
+=head2 get_safe_elements()
 
-Return a hashref with safe variable names as the keys.
+Return a hashref with safe element names as the keys.
 
-	my $safe_variables = get_safe_variables(
+	my $safe_elements = get_safe_elements(
 		$self,
 		$line_number,
 	);
 
 =cut
 
-sub get_safe_variables
+sub get_safe_elements
 {
 	my ( $self, $line_number ) = @_;
 
@@ -684,7 +684,7 @@ sub get_safe_variables
 	return {}
 		if !exists( $self->{'_sqlsafe'}->{ $line_number } );
 
-	# Return a hash of safe variable names.
+	# Return a hash of safe element names.
 	return {
 		map
 			{ $_ => 1 }
@@ -695,7 +695,7 @@ sub get_safe_variables
 
 =head2 parse_comments()
 
-Parse the comments for the current document and identify variables marked as
+Parse the comments for the current document and identify elements marked as
 SQL safe.
 
 	parse_comments(
@@ -719,17 +719,17 @@ sub parse_comments
 	foreach my $comment ( @$comments )
 	{
 		# Determine if the line is a "SQL safe" comment.
-		my ( $safe_variables ) = $comment =~ $SQL_SAFE_COMMENTS_REGEX;
-		next if !defined( $safe_variables );
+		my ( $safe_elements ) = $comment =~ $SQL_SAFE_COMMENTS_REGEX;
+		next if !defined( $safe_elements );
 
-		# Store list of safe variables for that line.
+		# Store list of safe elements for that line.
 		push(
 			@{ $self->{'_sqlsafe'}->{ $comment->line_number() } },
-			split( /[\s,]+(?=[\$\@\%])/, $safe_variables )
+			split( /[\s,]+(?=[\$\@\%])/, $safe_elements )
 		);
 	}
 
-	#print STDERR "SQL safe variables: ", Dumper( $self->{'_sqlsafe'} ), "\n";
+	#print STDERR "SQL safe elements: ", Dumper( $self->{'_sqlsafe'} ), "\n";
 	return;
 }
 
