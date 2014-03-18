@@ -16,6 +16,10 @@ my $tests =
 		expected => [ '$variable' ],
 	},
 	{
+		string   => "A test string\n with \$variable",
+		expected => [ '$variable' ],
+	},
+	{
 		string   => 'A test $variable $variable string',
 		expected => [ '$variable' ],
 	},

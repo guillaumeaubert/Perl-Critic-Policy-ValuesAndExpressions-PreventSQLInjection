@@ -413,7 +413,6 @@ sub get_token_content
 	if ( $token->isa('PPI::Token::HereDoc') )
 	{
 		my @heredoc = $token->heredoc();
-		pop( @heredoc ); # Remove the heredoc termination tag.
 		$content = join( '', @heredoc );
 	}
 	elsif ( $token->isa('PPI::Token::Quote' ) )
