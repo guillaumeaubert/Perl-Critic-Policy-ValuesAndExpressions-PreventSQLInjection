@@ -413,6 +413,17 @@ sub get_token_content
 	if ( $token->isa('PPI::Token::HereDoc') )
 	{
 		my @heredoc = $token->heredoc();
+
+		# Due to a bug in PPI::Token::Heredoc, $token->heredoc():
+		#    - does not include the terminator line when the terminator is a simple
+		#      bareword;
+		#    - includes the terminator line in the other cases (single/double
+		#      quoted , commands, escaped).
+		# See https://github.com/adamkennedy/PPI/pull/71, but in the meantime this
+		# addresses the inconsistency:
+		pop( @heredoc )
+			if $token->content() =~ /^\<\<['"`\\]/;
+
 		$content = join( '', @heredoc );
 	}
 	elsif ( $token->isa('PPI::Token::Quote' ) )
