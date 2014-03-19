@@ -104,7 +104,7 @@ my $heredoc = <<__HERE__
 	FROM $table
 __HERE__
 
-## name Heredoc with variable in last line
+## name (GH-14) Heredoc with variable in last line.
 ## failures 1
 ## cut
 
@@ -112,6 +112,15 @@ my $heredoc = <<__HERE__
 	SELECT
 	FROM $table
 __HERE__
+
+## name (GH-14) Double-quoted heredoc with variable in last line.
+## failures 1
+## cut
+
+my $heredoc = <<"HERE"
+	SELECT
+	FROM $table
+"HERE"
 
 ## name Double-quoted heredoc with multiple variables.
 ## failures 1
