@@ -355,3 +355,9 @@ my $sql = "select * from " . Acme::XYZ::method($table);
 
 my $sql = "select * from "
 	. Acme::XYZ::method($table); ## SQL safe (&Acme::XYZ::method)
+
+## name Mix safe variables and safe functions.
+## failures 0
+## cut
+
+my $sql = "select $var from " . method( $table ) . " where $where"; ## SQL safe ($var &method $where)
