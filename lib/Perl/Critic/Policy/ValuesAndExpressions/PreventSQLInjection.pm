@@ -90,17 +90,16 @@ determined that it will always return a safe output, add comment on the same
 line using the C<## SQL safe(function_name>) syntax:
 
 	my $sql = "SELECT * FROM table WHERE field = "
-		. some_safe_method( $value ); ## SQL safe(some_safe_method)
+		. some_safe_method( $value ); ## SQL safe (&some_safe_method)
 
 	my $sql = "SELECT * FROM table WHERE field = "
-		. Package::Name::some_safe_method( $value ); ## SQL safe(Package::Name::some_safe_method)
+		. Package::Name::some_safe_method( $value ); ## SQL safe (&Package::Name::some_safe_method)
 
 Note that class methods (a function called with C<-E<gt>> on a package name)
 still need to be declared with C<::> in the list of safe elements:
 
 	my $sql = "SELECT * FROM table WHERE field = "
-		. Package::Name->some_safe_method( $value ); ## SQL safe(Package::Name::some_safe_method)
-
+		. Package::Name->some_safe_method( $value ); ## SQL safe (&Package::Name::some_safe_method)
 
 =head2 SQL safe syntax notes
 
@@ -116,7 +115,7 @@ C<## SQL safe ($var1 $var2 ...)> are strictly equivalent.
 
 You can mix function names and variables in the comments to describe safe elements:
 
-	C<## SQL safe ($var1, function_name, $var2, ...)>
+	C<## SQL safe ($var1, &function_name, $var2, ...)>
 
 =back
 
@@ -376,7 +375,7 @@ sub violates
 			{
 				my $safe_elements = get_safe_elements( $self, $token->line_number() );
 				push( @$sql_injections, $function_name )
-					if !exists( $safe_elements->{ $function_name } );
+					if !exists( $safe_elements->{ '&' . $function_name } );
 			}
 		}
 
@@ -765,7 +764,7 @@ sub parse_comments
 		# Store list of safe elements for that line.
 		push(
 			@{ $self->{'_sqlsafe'}->{ $comment->line_number() } },
-			split( /[\s,]+(?=[\$\@\%])/, $safe_elements )
+			split( /[\s,]+(?=[\$\@\%\&])/, $safe_elements )
 		);
 	}
 

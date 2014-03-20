@@ -207,7 +207,7 @@ my $sql = "SELECT field2 "
 
 my $sql = "SELECT field2 "
 	. "FROM "
-	. get_table_name() ## SQL safe (get_table_name)
+	. get_table_name() ## SQL safe (&get_table_name)
 	. 'WHERE field = 1';
 
 ## name String as part of a list with variables in some list elements.
@@ -327,7 +327,7 @@ my $sql = "select * from " . Acme::XYZ->method($table);
 ## cut
 
 my $sql = "select * from "
-	. Acme::XYZ->method($table); ## SQL safe (Acme::XYZ::method)
+	. Acme::XYZ->method($table); ## SQL safe (&Acme::XYZ::method)
 
 ## name Class method call (with spacing).
 ## failures 1
@@ -340,7 +340,7 @@ my $sql = "select * from " . Acme::XYZ
 ## failures 0
 ## cut
 
-my $sql = "select * from " . Acme::XYZ ## SQL safe (Acme::XYZ::method)
+my $sql = "select * from " . Acme::XYZ ## SQL safe (&Acme::XYZ::method)
 	->method($table);
 
 ## name Function call to a different namespace.
@@ -354,4 +354,4 @@ my $sql = "select * from " . Acme::XYZ::method($table);
 ## cut
 
 my $sql = "select * from "
-	. Acme::XYZ::method($table); ## SQL safe (Acme::XYZ::method)
+	. Acme::XYZ::method($table); ## SQL safe (&Acme::XYZ::method)
