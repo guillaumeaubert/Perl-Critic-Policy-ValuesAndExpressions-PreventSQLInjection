@@ -306,3 +306,13 @@ $test
 $test
 	? 'insert into ' . $table
 	: 'update' . ' ' . $table;
+
+## name (GH-14) Another heredoc with variable in last line.
+## failures 1
+## cut
+
+my $heredoc = <<"HERE"
+	SELECT
+	FROM $table
+HERE
+
