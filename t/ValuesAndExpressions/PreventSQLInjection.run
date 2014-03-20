@@ -120,7 +120,7 @@ __HERE__
 my $heredoc = <<"HERE"
 	SELECT
 	FROM $table
-"HERE"
+HERE
 
 ## name Double-quoted heredoc with multiple variables.
 ## failures 1
@@ -129,7 +129,7 @@ my $heredoc = <<"HERE"
 my $heredoc = <<"HERE"
 	SELECT $field_name
 	FROM $table
-"HERE"
+HERE
 
 ## name Single-quoted heredoc with multiple variables.
 ## failures 0
@@ -138,7 +138,7 @@ my $heredoc = <<"HERE"
 my $heredoc = <<'HERE'
 	SELECT $field_name
 	FROM $table
-'HERE'
+HERE
 
 ## name Heredoc with multiple variables (whitelisted).
 ## failures 0
