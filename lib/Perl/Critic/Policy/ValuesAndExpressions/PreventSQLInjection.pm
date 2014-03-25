@@ -51,7 +51,40 @@ But would leave alone:
 
 =head1 CONFIGURATION
 
-There is no configuration option available for this policy.
+=head2 quoting_methods
+
+A space-separated list of methods that are known to always return a safely
+quoted result.
+
+For example, to declare C<custom_quote()> as safe, add the following to your
+C<.perlcriticrc>:
+
+	[ValuesAndExpressions::PreventSQLInjection]
+	quoting_methods = 'custom_quote'
+
+By default, C<quote()> and C<quote_identifier> are considered safe, given their
+ubiquity in code that uses DBI. Note however that specifying manually a new
+list for C<quoting_methods> will override those defaults, so you will have to
+do this if you want to keep the two default methods but add your custom one to
+the list:
+
+	[ValuesAndExpressions::PreventSQLInjection]
+	quoting_methods = 'quote quote_identifier custom_quote'
+
+
+=head2 safe_functions
+
+A space-separated string listing the functions that always return a safely
+quoted value.
+
+For example, to declare C<quote_function()> and
+C<My::Package::quote_external_function()> as safe, add the following to your
+C<.perlcriticrc>:
+
+	[ValuesAndExpressions::PreventSQLInjection]
+	safe_functions = 'quote_function My::Package::quote_external_function'
+
+By default, no functions are considered safe.
 
 
 =head1 MARKING ELEMENTS AS SAFE
@@ -201,23 +234,17 @@ Readonly::Scalar my $VARIABLES_REGEX => qr/
 	)
 /x;
 
-# Name of the methods that make a variable safe to use in SQL strings.
-# TODO: make this configurable via .perlcriticrc.
-Readonly::Scalar my $QUOTING_METHODS_REGEX => qr/
-	^
-	(?:
-		quote_identifier
-		|
-		quote
-	)
-	$
-/x;
+# Default for the name of the methods that make a variable safe to use in SQL
+# strings.
+Readonly::Scalar my $QUOTING_METHODS_DEFAULT => q|
+	quote_identifier
+	quote
+|;
 
-# Name of the packages and functions / class methods that are safe to
+# Default for the name of the packages and functions / class methods that are safe to
 # concatenate to SQL strings.
-# TODO: make this configurable via .perlcriticrc.
-Readonly::Scalar my $SAFE_FUNCTIONS => [
-];
+Readonly::Scalar my $SAFE_FUNCTIONS_DEFAULT => q|
+|;
 
 # Regex to detect comments like ## SQL safe ($var1, $var2).
 Readonly::Scalar my $SQL_SAFE_COMMENTS_REGEX => qr/
@@ -247,7 +274,20 @@ Return an array with information about the parameters supported.
 
 sub supported_parameters
 {
-	return ();
+	return (
+		{
+			name            => 'quoting_methods',
+			description     => 'A space-separated string listing the methods that return a safely quoted value.',
+			default_string  => $QUOTING_METHODS_DEFAULT,
+			behavior        => 'string',
+		},
+		{
+			name            => 'safe_functions',
+			description     => 'A space-separated string listing the functions that return a safely quoted value',
+			default_string  => $SAFE_FUNCTIONS_DEFAULT,
+			behavior        => 'string',
+		},
+	);
 }
 
 
@@ -311,6 +351,8 @@ sub violates
 {
 	my ( $self, $element, $doc ) = @_;
 
+	parse_config_parameters( $self );
+
 	parse_comments( $self, $doc );
 
 	# Make sure the first string looks like a SQL statement before investigating
@@ -357,7 +399,7 @@ sub violates
 		# injection risk.
 		elsif ( $token->isa('PPI::Token::Symbol') )
 		{
-			my ( $variable, $is_quoted ) = get_complete_variable( $token );
+			my ( $variable, $is_quoted ) = get_complete_variable( $self, $token );
 			if ( !$is_quoted )
 			{
 				my $safe_elements = get_safe_elements( $self, $token->line_number() );
@@ -370,7 +412,7 @@ sub violates
 		elsif ( $token->isa('PPI::Token::Word') )
 		{
 			# Find out if the PPO::Token::Word is the beginning of a call or not.
-			my ( $function_name, $is_quoted ) = get_function_name( $token );
+			my ( $function_name, $is_quoted ) = get_function_name( $self, $token );
 			if ( defined( $function_name ) && !$is_quoted )
 			{
 				my $safe_elements = get_safe_elements( $self, $token->line_number() );
@@ -405,13 +447,13 @@ Retrieve full name (including the package name) of a class function/method
 based on a PPI::Token::Word object, and indicate if it is a call that returns
 quoted data making it safe to include directly into SQL strings.
 
-	my ( $function_name, $is_quoted ) = get_function_name( $token );
+	my ( $function_name, $is_quoted ) = get_function_name( $policy, $token );
 
 =cut
 
 sub get_function_name
 {
-	my ( $token ) = @_;
+	my ( $self, $token ) = @_;
 
 	croak 'The first parameter needs to be a PPI::Token::Word object'
 		if !$token->isa('PPI::Token::Word');
@@ -468,7 +510,9 @@ sub get_function_name
 	}
 
 	my $full_name = join( '::', grep { defined( $_ ) } ( $package, $function_name ) );
-	my $is_safe = scalar( grep { $full_name eq $_ } @$SAFE_FUNCTIONS ) == 0 ? 0 : 1;
+	my $is_safe = defined( $self->{'_safe_functions_regex'} ) && ( $full_name =~ $self->{'_safe_functions_regex'} )
+		? 1
+		: 0;
 	return ( $full_name, $is_safe );
 }
 
@@ -479,7 +523,7 @@ Retrieve a complete variable starting with a PPI::Token::Symbol object, and
 indicate if the variable has used a quoting method to make it safe to use
 directly in SQL strings.
 
-	my ( $variable, $is_quoted ) = get_complete_variable( $token );
+	my ( $variable, $is_quoted ) = get_complete_variable( $policy, $token );
 
 For example, if you have $variable->{test}->[0] in your code, PPI will identify
 $variable as a PPI::Token::Symbol, and calling this function on that token will
@@ -489,7 +533,7 @@ return the whole "$variable->{test}->[0]" string.
 
 sub get_complete_variable
 {
-	my ( $token ) = @_;
+	my ( $self, $token ) = @_;
 
 	croak 'The first parameter needs to be a PPI::Token::Symbol object'
 		if !$token->isa('PPI::Token::Symbol');
@@ -512,7 +556,8 @@ sub get_complete_variable
 		}
 		elsif ( $sibling->isa('PPI::Token::Word')
 			&& $sibling->method_call()
-			&& ( $sibling->content =~ $QUOTING_METHODS_REGEX )
+			&& defined( $self->{'_quoting_methods_regex'} )
+			&& ( $sibling->content =~ $self->{'_quoting_methods_regex'} )
 		)
 		{
 			$is_quoted = 1;
@@ -771,6 +816,49 @@ sub parse_comments
 	}
 
 	#print STDERR "SQL safe elements: ", Dumper( $self->{'_sqlsafe'} ), "\n";
+	return;
+}
+
+
+=head2 parse_config_parameters()
+
+Parse the parameters from the C<.perlcriticrc> file, if any are specified
+there.
+
+	parse_config_parameters( $policy );
+
+=cut
+
+sub parse_config_parameters
+{
+	my ( $self ) = @_;
+
+	if ( !exists( $self->{'_quoting_methods_regex'} ) )
+	{
+		if ( $self->{'_quoting_methods'} =~ /\w/ )
+		{
+			my $regex_components = join( '|', grep { $_ =~ /\w/ } split( /,?\s+/, $self->{'_quoting_methods'} ) );
+			$self->{'_quoting_methods_regex'} = qr/^(?:$regex_components)$/x;
+		}
+		else
+		{
+			$self->{'_quoting_methods_regex'} = undef;
+		}
+	}
+
+	if ( !exists( $self->{'_safe_functions_regex'} ) )
+	{
+		if ( $self->{'_safe_functions'} =~ /\w/ )
+		{
+			my $regex_components = join( '|', grep { $_ =~ /\w/ } split( /,?\s+/, $self->{'_safe_functions'} ) );
+			$self->{'_safe_functions_regex'} = qr/^(?:$regex_components)$/x;
+		}
+		else
+		{
+			$self->{'_safe_functions_regex'} = undef;
+		}
+	}
+
 	return;
 }
 
