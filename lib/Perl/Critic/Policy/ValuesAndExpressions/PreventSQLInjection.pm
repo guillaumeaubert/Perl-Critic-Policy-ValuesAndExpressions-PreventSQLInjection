@@ -360,6 +360,37 @@ sub violates
 	return ()
 		if !is_sql_statement( $element );
 
+	# Find SQL injection vulnerabilities.
+	my $sql_injections = detect_sql_injections( $self, $element );
+
+	# Return violations if any.
+	return defined( $sql_injections ) && scalar( @$sql_injections ) != 0
+		? $self->violation(
+			$DESCRIPTION,
+			sprintf(
+				$EXPLANATION,
+				join( ', ', @$sql_injections ),
+			),
+			$element,
+		)
+		: ();
+}
+
+
+=head1 INTERNAL FUNCTIONS
+
+=head2 detect_sql_injections()
+
+Detect SQL injections vulnerabilities tied to the PPI element specified.
+
+	my $sql_injections = detect_sql_injections( $policy, $element );
+
+=cut
+
+sub detect_sql_injections
+{
+	my ( $self, $element ) = @_;
+
 	my $sql_injections = [];
 	my $token = $element;
 	while ( defined( $token ) && $token ne '' )
@@ -368,7 +399,7 @@ sub violates
 		# variables.
 		if ( $token->isa( 'PPI::Token::HereDoc' ) || $token->isa( 'PPI::Token::Quote' ) ) ## no critic (ControlStructures::ProhibitCascadingIfElse)
 		{
-			push( @$sql_injections, @{ analyze_sql_injections( $self, $token ) || [] } );
+			push( @$sql_injections, @{ analyze_string_injections( $self, $token ) || [] } );
 		}
 		# If it is a concatenation operator, continue to the next token.
 		elsif ( $token->isa('PPI::Token::Operator') && $token->content() eq '.' )
@@ -425,21 +456,9 @@ sub violates
 		$token = $token->snext_sibling();
 	}
 
-	# Return violations if any.
-	return defined( $sql_injections ) && scalar( @$sql_injections ) != 0
-		? $self->violation(
-			$DESCRIPTION,
-			sprintf(
-				$EXPLANATION,
-				join( ', ', @$sql_injections ),
-			),
-			$element,
-		)
-		: ();
+	return $sql_injections;
 }
 
-
-=head1 INTERNAL FUNCTIONS
 
 =head2 get_function_name()
 
@@ -625,19 +644,19 @@ sub get_token_content
 }
 
 
-=head2 analyze_sql_injections()
+=head2 analyze_string_injections()
 
-Analyze a token and returns an arrayref of variables that are potential SQL
-injection vectors.
+Analyze a token representing a string and returns an arrayref of variables that
+are potential SQL injection vectors.
 
-	my $sql_injection_vector_names = analyze_sql_injections(
+	my $sql_injection_vector_names = analyze_string_injections(
 		$policy,
 		$token,
 	);
 
 =cut
 
-sub analyze_sql_injections
+sub analyze_string_injections
 {
 	my ( $policy, $token ) = @_;
 
