@@ -361,3 +361,10 @@ my $sql = "select * from "
 ## cut
 
 my $sql = "select $var from " . method( $table ) . " where $where"; ## SQL safe ($var &method $where)
+
+## name Custom safe functions.
+## parms { safe_functions => 'Acme::XYZ::method' }
+## failures 0
+## cut
+
+my $sql = "select * from " . Acme::XYZ::method($table);
