@@ -397,6 +397,8 @@ sub violates
 }
 
 
+=head1 INTERNAL FUNCTIONS
+
 =head2 get_function_name()
 
 Retrieve full name (including the package name) of a class function/method
@@ -584,7 +586,7 @@ Analyze a token and returns an arrayref of variables that are potential SQL
 injection vectors.
 
 	my $sql_injection_vector_names = analyze_sql_injections(
-		$policy, # this object
+		$policy,
 		$token,
 	);
 
@@ -703,7 +705,7 @@ sub extract_variables
 Return a hashref with safe element names as the keys.
 
 	my $safe_elements = get_safe_elements(
-		$self,
+		$policy,
 		$line_number,
 	);
 
@@ -738,7 +740,7 @@ Parse the comments for the current document and identify elements marked as
 SQL safe.
 
 	parse_comments(
-		$self,
+		$policy,
 		$ppi_document,
 	);
 
