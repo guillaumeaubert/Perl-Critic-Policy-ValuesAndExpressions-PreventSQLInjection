@@ -368,3 +368,24 @@ my $sql = "select $var from " . method( $table ) . " where $where"; ## SQL safe 
 ## cut
 
 my $sql = "select * from " . Acme::XYZ::method($table);
+
+## name Prohibit all quoting methods.
+## parms { quoting_methods => '' }
+## failures 1
+## cut
+
+$sql = "UPDATE table_name SET field = " . $dbh->quote($value) . "WHERE field = 1";
+
+## name Custom quoting method.
+## parms { quoting_methods => 'test' }
+## failures 0
+## cut
+
+$sql = "UPDATE table_name SET field = " . $dbh->test($value) . "WHERE field = 1";
+
+## name Custom quoting method, ensure that defaults are disabled.
+## parms { quoting_methods => 'test' }
+## failures 1
+## cut
+
+$sql = "UPDATE table_name SET field = " . $dbh->test($value) . "WHERE field = " . $dbh->quote($value2);
