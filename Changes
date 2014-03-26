@@ -1,5 +1,19 @@
 Revision history for Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
 
+v1.3.0  2014-03-26
+        - (GH-12) Fixed handling of ternary operators.
+        - (GH-13) Added detection of function / class method calls, added
+          support for marking functions / class methods as safe from SQL
+          injection risks.
+        - (GH-13) Allowed configuring the list of safe functions, class
+          methods, and object methods via .perlcriticrc.
+        - (GH-14) Fixed handling of quoted heredoc blocks (thanks Victor Efimov
+          for finding the issue).
+        - (GH-16) Fixed double-quoted string test.
+        - Added many tests, thanks to Victor Efimov.
+        - Updated list of current limitations of the module.
+        - Clarified documentation.
+
 v1.2.0  2013-12-30
         - Added support for commas (in addition to spaces) in safe variable
           lists (GH-9).
