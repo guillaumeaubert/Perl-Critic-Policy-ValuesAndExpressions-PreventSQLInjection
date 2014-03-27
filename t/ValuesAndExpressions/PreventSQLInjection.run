@@ -379,7 +379,7 @@ my $sql = "select from " . $x->(); ## SQL safe ($x)
 ## failures 0
 ## cut
 
-my $sql = "select from " . $x->( $y ); ## SQL safe ($x, $y)
+my $sql = "select from " . $x->( $y ); ## SQL safe ($x)
 
 ## name Anonimous functions without arguments - another syntax
 ## failures 0
@@ -391,7 +391,7 @@ my $sql = "select from " . &$x; ## SQL safe ($x)
 ## failures 0
 ## cut
 
-my $sql = "select from " . &$x($y); ## SQL safe ($x, $y)
+my $sql = "select from " . &$x($y); ## SQL safe ($x)
 
 ## name Functions returning anonimous functions without SQL safe
 ## failures 1
