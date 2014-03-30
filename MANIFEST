@@ -13,7 +13,6 @@ examples/examples.txt
 ignore.txt
 lib/Perl/Critic/Policy/ValuesAndExpressions/PreventSQLInjection.pm
 t/00-load.t
-t/10-extract_variables.t
 t/30-policy.t
 t/35-default_themes.t
 t/ValuesAndExpressions/PreventSQLInjection.run

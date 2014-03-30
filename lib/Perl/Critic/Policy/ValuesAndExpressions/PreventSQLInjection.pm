@@ -10,6 +10,7 @@ use Carp;
 use Data::Dumper;
 use Perl::Critic::Utils;
 use Readonly;
+use String::InterpolatedVariables;
 use Try::Tiny;
 
 
@@ -202,37 +203,6 @@ As well as this:
 
 Readonly::Scalar my $DESCRIPTION => 'SQL injection risk.';
 Readonly::Scalar my $EXPLANATION => 'Variables in interpolated SQL string are susceptible to SQL injection: %s';
-
-Readonly::Scalar my $VARIABLES_REGEX => qr/
-	# Ignore escaped sigils, since those wouldn't get interpreted as variables to interpolate.
-	(?<!\\)
-	# Allow literal, non-escapy backslashes.
-	(?:\\\\)*
-	(
-		# The variable needs to start with a sigil.
-		[\$\@]
-		# Account for the dereferencing, such as "$$" or "@$".
-		\$?
-		# Variable name.
-		(?:
-			# Note: include '::' to support package variables here.
-			\{(?:\w+|::)\} # Explicit {variable} name.
-			|
-			(?:\w|::)+	 # Variable name.
-		)
-		# Catch nested data structures.
-		(?:
-			# Allow for a dereferencing ->.
-			(?:->)?
-			# Can be followed by either a hash or an array.
-			(?:
-				\{(?:\w+|'[^']+'|"[^"]+")\}  # Hash element.
-				|
-				\[['"]?\d+['"]?\]            # Array element.
-			)
-		)*
-	)
-/x;
 
 # Default for the name of the methods that make a variable safe to use in SQL
 # strings.
@@ -690,7 +660,7 @@ sub analyze_string_injections
 		# Find all the variables that appear in the string.
 		my $unsafe_variables = [
 			grep { !$safe_elements->{ $_ } }
-			@{ extract_variables( $content ) }
+			@{ String::InterpolatedVariables::extract( $content ) }
 		];
 
 		# Based on the token type, determine if it is interpolated and report any
@@ -737,30 +707,6 @@ sub analyze_string_injections
 	return defined( $sql_injections )
 		? $sql_injections
 		: [];
-}
-
-
-=head2 extract_variables()
-
-Extract variable names from a string.
-
-	my $variables = extract_variables( $string );
-
-=cut
-
-sub extract_variables
-{
-	my ( $string ) = @_;
-
-	my $variables = [];
-	while ( my ( $variable ) = $string =~ $VARIABLES_REGEX )
-	{
-		push( @$variables, $variable );
-		$string =~ s/\Q$variable\E//g;
-	}
-	#print STDERR "Interpolated variables: ", Dumper( $variables ), "\n";
-
-	return $variables;
 }
 
 
