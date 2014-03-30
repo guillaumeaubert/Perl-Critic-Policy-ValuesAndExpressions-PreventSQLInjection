@@ -41,20 +41,20 @@ my $builder = $class->new(
 	dist_version_from    => 'lib/Perl/Critic/Policy/ValuesAndExpressions/PreventSQLInjection.pm',
 	build_requires       =>
 	{
-		'File::Spec'                 => 0,
-		'Test::Deep'                 => 0,
-		'Test::FailWarnings'         => 0,
-		'Test::More'                 => 0,
-		'Test::Perl::Critic::Policy' => 0,
+		'File::Spec'                    => 0,
+		'Test::Deep'                    => 0,
+		'Test::FailWarnings'            => 0,
+		'Test::More'                    => 0,
+		'Test::Perl::Critic::Policy'    => 0,
 	},
 	requires             =>
 	{
-		'perl'                 => 5.006,
-		'Carp'                 => 0,
-		'Perl::Critic::Policy' => 0,
-		'Perl::Critic::Utils'  => 0,
-		'Readonly'             => 0,
-		'Try::Tiny'            => 0,
+		'perl'                          => 5.006,
+		'Carp'                          => 0,
+		'Perl::Critic::Policy'          => 0,
+		'Perl::Critic::Utils'           => 0,
+		'Readonly'                      => 0,
+		'Try::Tiny'                     => 0,
 		'String::InterpolatedVariables' => 0,
 	},
 	add_to_cleanup       =>
