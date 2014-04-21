@@ -1,5 +1,10 @@
 Revision history for Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
 
+v1.3.1  2014-04-20
+        - Fixed "package version matches dist version" for CPANTS.
+        - Fixed license declared in meta files.
+        - Refactored to use String::InterpolatedVariables.
+
 v1.3.0  2014-03-26
         - (GH-12) Fixed handling of ternary operators.
         - (GH-13) Added detection of function / class method calls, added
