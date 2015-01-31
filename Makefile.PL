@@ -3,26 +3,25 @@ require 5.006;
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-  'NAME' => 'Perl::Critic::Policy::ValuesAndExpressions::PreventSQLInjection',
-  'VERSION_FROM' => 'lib/Perl/Critic/Policy/ValuesAndExpressions/PreventSQLInjection.pm',
-  'PREREQ_PM' => {
-                   'Carp' => 0,
-                   'File::Spec' => 0,
-                   'Perl::Critic::Policy' => 0,
-                   'Perl::Critic::Utils' => 0,
-                   'Readonly' => 0,
-                   'String::InterpolatedVariables' => 0,
-                   'Test::Deep' => 0,
-                   'Test::FailWarnings' => 0,
-                   'Test::More' => 0,
-                   'Test::Perl::Critic::Policy' => 0,
-                   'Try::Tiny' => 0
-                 },
-  'INSTALLDIRS' => 'site',
-  'EXE_FILES' => [],
-  'PL_FILES' => {},
   'test' => {
               'TESTS' => 't/*.t t/ValuesAndExpressions/*.t'
-            }
+            },
+  'PL_FILES' => {},
+  'INSTALLDIRS' => 'site',
+  'NAME' => 'Perl::Critic::Policy::ValuesAndExpressions::PreventSQLInjection',
+  'EXE_FILES' => [],
+  'VERSION_FROM' => 'lib/Perl/Critic/Policy/ValuesAndExpressions/PreventSQLInjection.pm',
+  'PREREQ_PM' => {
+                   'Try::Tiny' => 0,
+                   'String::InterpolatedVariables' => 0,
+                   'Test::FailWarnings' => 0,
+                   'Readonly' => 0,
+                   'Carp' => 0,
+                   'Test::More' => 0,
+                   'Perl::Critic::Policy' => 0,
+                   'Test::Perl::Critic::Policy' => 0,
+                   'Test::Deep' => 0,
+                   'Perl::Critic::Utils' => 0
+                 }
 )
 ;

@@ -41,7 +41,6 @@ my $builder = $class->new(
 	dist_version_from    => 'lib/Perl/Critic/Policy/ValuesAndExpressions/PreventSQLInjection.pm',
 	build_requires       =>
 	{
-		'File::Spec'                    => 0,
 		'Test::Deep'                    => 0,
 		'Test::FailWarnings'            => 0,
 		'Test::More'                    => 0,
