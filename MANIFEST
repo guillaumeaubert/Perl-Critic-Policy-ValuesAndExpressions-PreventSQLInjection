@@ -1,3 +1,4 @@
+.githooksrc
 .perlcriticrc
 .travis.yml
 Build.PL
