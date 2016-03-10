@@ -4,6 +4,7 @@ Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
 [![Build Status](https://travis-ci.org/guillaumeaubert/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection.svg?branch=master)](https://travis-ci.org/guillaumeaubert/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection)
 [![Coverage Status](https://coveralls.io/repos/guillaumeaubert/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection/badge.svg?branch=master)](https://coveralls.io/r/guillaumeaubert/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection?branch=master)
 [![CPAN](https://img.shields.io/cpan/v/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection.svg)](https://metacpan.org/release/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection)
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://opensource.org/licenses/GPL-3.0)
 
 When building SQL statements manually instead of using an ORM, any input must
 be quoted or passed using placeholders to prevent the introduction of SQL
