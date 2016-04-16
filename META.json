@@ -6,7 +6,7 @@
    "dynamic_config" : 1,
    "generated_by" : "Module::Build version 0.4205",
    "license" : [
-      "gpl_3"
+      "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
@@ -52,7 +52,7 @@
       },
       "homepage" : "https://metacpan.org/release/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection",
       "license" : [
-         "http://www.gnu.org/licenses/gpl-3.0.txt"
+         "http://dev.perl.org/licenses/"
       ],
       "repository" : {
          "url" : "https://github.com/guillaumeaubert/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection"
