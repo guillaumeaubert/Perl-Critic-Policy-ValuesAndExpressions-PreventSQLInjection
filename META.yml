@@ -19,7 +19,7 @@ name: Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
 provides:
   Perl::Critic::Policy::ValuesAndExpressions::PreventSQLInjection:
     file: lib/Perl/Critic/Policy/ValuesAndExpressions/PreventSQLInjection.pm
-    version: v1.3.1
+    version: v1.4.0
 requires:
   Carp: '0'
   Perl::Critic::Policy: '0'
@@ -33,4 +33,4 @@ resources:
   homepage: https://metacpan.org/release/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
   license: http://dev.perl.org/licenses/
   repository: https://github.com/guillaumeaubert/Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
-version: v1.3.1
+version: v1.4.0

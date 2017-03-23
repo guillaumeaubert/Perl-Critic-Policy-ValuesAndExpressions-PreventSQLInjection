@@ -1,5 +1,9 @@
 Revision history for Perl-Critic-Policy-ValuesAndExpressions-PreventSQLInjection
 
+v1.4.0  2017-03-22
+        - Relicensed under Perl 5 terms.
+        - Cleaned up dependencies.
+
 v1.3.1  2014-04-20
         - Fixed "package version matches dist version" for CPANTS.
         - Fixed license declared in meta files.
