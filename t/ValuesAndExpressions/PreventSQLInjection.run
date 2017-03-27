@@ -131,6 +131,13 @@ my $heredoc = <<"HERE"
 	FROM $table
 HERE
 
+## name (GH-14) Heredoc when there are 0 or 1 newlines after terminator
+## failures 0
+## cut
+
+my $heredoc = <<"SELECT".$x;
+
+SELECT
 ## name Single-quoted heredoc with multiple variables.
 ## failures 0
 ## cut
