@@ -305,6 +305,20 @@ sub applies_to
 	);
 }
 
+=head2 prepare_to_scan_document()
+
+Sets up policy ($self) for each new document before scanning.
+
+	my $bool = $policy->prepare_to_scan_document();
+
+=cut
+
+sub prepare_to_scan_document {
+	my ( $self, $doc ) = @_;
+	delete $self->{'_sqlsafe'};
+    return $TRUE;
+}
+
 
 =head2 violates()
 
