@@ -44,6 +44,7 @@ my $builder = $class->new(
 		'Test::Deep'                    => 0,
 		'Test::FailWarnings'            => 0,
 		'Test::More'                    => 0,
+		'Test::Perl::Critic'            => 0,
 		'Test::Perl::Critic::Policy'    => 0,
 	},
 	requires             =>
