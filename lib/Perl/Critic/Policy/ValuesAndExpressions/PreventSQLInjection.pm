@@ -216,6 +216,17 @@ Readonly::Scalar my $QUOTING_METHODS_DEFAULT => q|
 Readonly::Scalar my $SAFE_FUNCTIONS_DEFAULT => q|
 |;
 
+# Default for the name of the functions that are generally safe to use (because they
+# are not expected to generate SQL calls -- unless you are doing something really,
+# really weird.)
+Readonly::Scalar my $SAFE_CONTEXT_DEFAULT => q|
+	die
+	warn
+	carp
+	croak
+	confess
+|;
+
 # Regex to detect comments like ## SQL safe ($var1, $var2).
 Readonly::Scalar my $SQL_SAFE_COMMENTS_REGEX => qr/
 	\A
@@ -255,6 +266,12 @@ sub supported_parameters
 			name            => 'safe_functions',
 			description     => 'A space-separated string listing the functions that return a safely quoted value',
 			default_string  => $SAFE_FUNCTIONS_DEFAULT,
+			behavior        => 'string',
+		},
+		{
+			name            => 'safe_context',
+			description     => 'A space-separated string listing the functions that are not subject to SQL injections',
+			default_string  => $SAFE_CONTEXT_DEFAULT,
 			behavior        => 'string',
 		},
 	);
@@ -329,6 +346,10 @@ sub violates
 	# further.
 	return ()
 		if !is_sql_statement( $element );
+
+	# Skip this statement if we are in a safe context (e.g., die "string")
+	return ()
+		if $self->is_in_safe_context( $element );
 
 	# Find SQL injection vulnerabilities.
 	my $sql_injections = detect_sql_injections( $self, $element );
@@ -580,6 +601,27 @@ sub is_sql_statement
 		: 0;
 }
 
+=head2 is_in_safe_context()
+
+Return a boolean indicating whether a string is used in a safe context (e.g., die "string").
+
+    my $is_in_safe_context = is_in_safe_context( $token );
+
+=cut
+
+sub is_in_safe_context
+{
+    my ( $self, $token ) = @_;
+
+    return 0 if !$self->{'_safe_context_regex'};
+
+    my $sprevious_sibling = $token->sprevious_sibling;
+
+    return 0 if !defined $sprevious_sibling or $sprevious_sibling eq '';
+    return 0 if !$sprevious_sibling->isa('PPI::Token::Word');
+
+    return $sprevious_sibling->{content} =~ $self->{'_safe_context_regex'};
+}
 
 =head2 get_token_content()
 
@@ -823,6 +865,20 @@ sub parse_config_parameters
 			$self->{'_safe_functions_regex'} = undef;
 		}
 	}
+
+	if ( !exists( $self->{'_safe_context_regex'} ) )
+	{
+		if ( $self->{'_safe_context'} =~ /\w/ )
+		{
+			my $regex_components = join( '|', grep { $_ =~ /\w/ } split( /,?\s+/, $self->{'_safe_context'} ) );
+			$self->{'_safe_context_regex'} = qr/^(?:$regex_components)$/x;
+		}
+		else
+		{
+			$self->{'_safe_context_regex'} = undef;
+		}
+	}
+
 
 	return;
 }
