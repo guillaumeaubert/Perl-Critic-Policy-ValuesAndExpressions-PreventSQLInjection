@@ -4,6 +4,22 @@
 
 my $string = "Hello $world";
 
+## name Prevent false positives in non-db operations
+## failures 0
+## cut
+
+die     "Select returned: $error";
+warn    "Update returned: $error";
+croak   "Insert returned: $error";
+carp    "Delete returned: $error";
+confess "Select returned: $error";
+
+do_something() or die     "Select returned: $error";
+do_something() or warn    "Update returned: $error";
+do_something() or croak   "Insert returned: $error";
+do_something() or carp    "Delete returned: $error";
+do_something() or confess "Select returned: $error";
+
 ## name Single-quoted SQL string with an escaped variable.
 ## failures 0
 ## cut
